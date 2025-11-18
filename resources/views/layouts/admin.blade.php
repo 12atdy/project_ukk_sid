@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Desa Sidokerto</title>
+    <title>Sistem Informasi Desa Sidokerto</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
         body { background-color: #f8f9fa; }
         .sidebar {
@@ -14,19 +16,40 @@
         }
         .sidebar-sticky { position: relative; top: 0; height: calc(100vh - 48px); padding-top: .5rem; overflow-x: hidden; overflow-y: auto; }
         .nav-link { font-weight: 500; color: #333; }
-        .nav-link.active, .nav-link:hover { color: #0d6efd; }
-        .main-content { margin-left: 220px; /* Sesuaikan dengan lebar sidebar */ }
+        .nav-link:hover { color: #0d6efd; }
+        .nav-link.active { color: #0d6efd; font-weight: bold; }
+        /* Agar konten tidak tertutup sidebar di layar besar */
+        .main-content { margin-left: 220px; } 
+        /* Penyesuaian untuk layar kecil */
+        @media (max-width: 767.98px) {
+            .sidebar { top: 5rem; padding-top: .5rem; }
+            .main-content { margin-left: 0; }
+        }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-dark bg-dark fixed-top p-0 shadow">
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">Desa Sidokerto</a>
-    <ul class="navbar-nav flex-row ms-auto me-3">
-         <li class="nav-item">
+    
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <ul class="navbar-nav flex-row ms-auto me-3 align-items-center">
+        <li class="nav-item me-3 d-none d-md-block">
+            <span class="text-white">
+                Hai, <strong>{{ Auth::user()->name }}</strong> 
+                <span class="badge bg-secondary ms-1">{{ ucfirst(Auth::user()->role) }}</span>
+            </span>
+        </li>
+
+        <li class="nav-item">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-dark">Logout <i class="fas fa-sign-out-alt"></i></button>
+                <button type="submit" class="btn btn-dark btn-sm border-white" onclick="return confirm('Yakin ingin logout?')">
+                    Logout <i class="fas fa-sign-out-alt"></i>
+                </button>
             </form>
         </li>
     </ul>
@@ -37,22 +60,54 @@
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
             <div class="sidebar-sticky pt-3">
                 <ul class="nav flex-column">
+                    
+                    @if(Auth::user()->role == 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i> Dashboard Admin
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('biodata.*') ? 'active' : '' }}" href="{{ route('biodata.index') }}">
+                                <i class="fas fa-users me-2"></i> Biodata Penduduk
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('berita.*') ? 'active' : '' }}" href="{{ route('berita.index') }}">
+                                <i class="fas fa-newspaper me-2"></i> Kelola Berita
+                            </a>
+                        </li>
+                    
+                    @elseif(Auth::user()->role == 'warga')
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('warga.dashboard') ? 'active' : '' }}" href="{{ route('warga.dashboard') }}">
+                                <i class="fas fa-home me-2"></i> Portal Warga
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-envelope me-2"></i> Ajukan Surat
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-bullhorn me-2"></i> Buat Pengaduan
+                            </a>
+                        </li>
+                    @endif
+
+                </ul>
+
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Menu Umum</span>
+                </h6>
+                <ul class="nav flex-column mb-2">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('dashboard') }}">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        <a class="nav-link" href="{{ url('/') }}">
+                            <i class="fas fa-globe me-2"></i> Ke Halaman Depan
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('biodata.index') }}">
-                            <i class="fas fa-users"></i> Biodata Penduduk
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-newspaper"></i> Berita Desa
-                        </a>
-                    </li>
-                    </ul>
+                </ul>
             </div>
         </nav>
 

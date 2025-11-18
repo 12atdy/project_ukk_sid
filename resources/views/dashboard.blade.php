@@ -21,7 +21,7 @@
             <div class="card-body">
                 <h5 class="card-title">Kelola Berita Desa</h5>
                 <p class="card-text">Publikasikan pengumuman dan berita terbaru untuk warga.</p>
-                <a href="#" class="btn btn-light">Berita Desa <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{{ route('berita.index') }}" class="btn btn-light">Berita Desa <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>

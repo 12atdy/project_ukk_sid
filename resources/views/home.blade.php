@@ -18,7 +18,7 @@
 
         /* Hero Section Styling */
         .hero-section {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url({{asset('images/gambar-desa.jpg')}});
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url({{ asset('images/gambar-desa.jpg') }});
             background-size: cover;
             background-position: center;
             height: 100vh;

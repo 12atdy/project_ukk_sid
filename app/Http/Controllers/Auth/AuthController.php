@@ -10,18 +10,30 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // Menampilkan form registrasi
+    // ==========================================================
+    // BAGIAN FORM & LOGIN
+    // ==========================================================
+
+    // Menampilkan form registrasi (Untuk Admin/Umum)
     public function showRegisterForm()
     {
         return view('auth.register');
     }
 
+    // Menampilkan form registrasi KHUSUS WARGA
+    public function showWargaRegisterForm()
+    {
+        return view('auth.register-warga');
+    }
+
+    // Menampilkan form login
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    // Proses Login
+   public function login(Request $request)
     {
         // 1. Validasi
         $credentials = $request->validate([
@@ -31,14 +43,20 @@ class AuthController extends Controller
 
         // 2. Coba autentikasi
         if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
-        // Pastikan tujuannya adalah route('dashboard')
-        return redirect()->intended(route('dashboard'));
-}
+            $request->session()->regenerate();
 
-        // 3. Jika gagal, kembali ke form login dengan pesan error
+            // Cek Role untuk Redirect
+            if (Auth::user()->role == 'admin') {
+                return redirect()->intended(route('dashboard'));
+            } else {
+                // 👇 PERBAIKAN DI SINI: Arahkan ke route 'warga.dashboard'
+                return redirect()->route('warga.dashboard'); 
+            }
+        }
+
+        // 3. Jika gagal
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Email atau password salah.',
         ])->onlyInput('email');
     }
 
@@ -51,7 +69,11 @@ class AuthController extends Controller
         return redirect('/'); // Arahkan ke halaman depan
     }
 
-    // Memproses data registrasi
+    // ==========================================================
+    // BAGIAN PROSES REGISTRASI
+    // ==========================================================
+
+    // Memproses data registrasi (Untuk Admin/Umum)
     public function register(Request $request)
     {
         // 1. Validasi
@@ -61,16 +83,43 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // 2. Buat user baru
+        // 2. Buat user baru 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password), // Password di-hash (diamankan)
+            'password' => Hash::make($request->password),
+            'role' => 'admin' 
         ]);
 
         // 3. Login user secara otomatis
         Auth::login($user);
-        // Pastikan tujuannya adalah route('dashboard')
+        
         return redirect()->route('dashboard');
+    }
+
+    // Memproses data registrasi KHUSUS WARGA
+    public function registerWarga(Request $request)
+    {
+        // 1. Validasi 
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // 2. Buat user baru dengan ROLE 'warga'
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'warga' 
+        ]);
+
+        // 3. Login user secara otomatis
+        Auth::login($user);
+
+        // 4. Redirect
+        // 👇 PERUBAHAN 2: Setelah daftar, langsung masuk ke Portal Warga
+        return redirect()->route('warga.dashboard'); 
     }
 }

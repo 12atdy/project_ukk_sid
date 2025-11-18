@@ -50,6 +50,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        // ... (Tidak perlu diisi untuk sekarang, karena kita pakai migrate:fresh)
+        ///... (Tidak perlu diisi untuk sekarang, karena kita pakai migrate:fresh)
     }
 };
