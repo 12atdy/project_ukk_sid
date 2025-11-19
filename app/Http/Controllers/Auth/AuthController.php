@@ -72,31 +72,7 @@ class AuthController extends Controller
     // ==========================================================
     // BAGIAN PROSES REGISTRASI
     // ==========================================================
-
-    // Memproses data registrasi (Untuk Admin/Umum)
-    public function register(Request $request)
-    {
-        // 1. Validasi
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        // 2. Buat user baru 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'admin' 
-        ]);
-
-        // 3. Login user secara otomatis
-        Auth::login($user);
-        
-        return redirect()->route('dashboard');
-    }
-
+    
     // Memproses data registrasi KHUSUS WARGA
     public function registerWarga(Request $request)
     {
@@ -115,8 +91,6 @@ class AuthController extends Controller
             'role' => 'warga' 
         ]);
 
-        // 3. Login user secara otomatis
-        Auth::login($user);
 
         // 4. Redirect
         // 👇 PERUBAHAN 2: Setelah daftar, langsung masuk ke Portal Warga

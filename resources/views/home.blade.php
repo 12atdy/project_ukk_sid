@@ -80,7 +80,7 @@
                         <a class="nav-link" href="#">Layanan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-primary text-white ms-lg-2 px-3" href="{{ route('biodata.index') }}">
+                        <a class="nav-link btn btn-primary text-white ms-lg-2 px-3" href="{{ route('login') }}">
                             <i class="fas fa-sign-in-alt me-1"></i> Login Aparatur
                         </a>
                     </li>

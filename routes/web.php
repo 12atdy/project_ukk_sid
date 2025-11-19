@@ -37,8 +37,6 @@ Route::post('register-warga', [AuthController::class, 'registerWarga'])->name('w
 |--------------------------------------------------------------------------
 | 3. ROUTE KHUSUS ADMIN (Dijaga Satpam)
 |--------------------------------------------------------------------------
-| Hanya user yang sudah LOGIN ('auth') DAN punya role ADMIN ('role:admin')
-| yang boleh masuk ke sini.
 */
 Route::middleware(['auth', 'role:admin'])->group(function () {
     
@@ -50,7 +48,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // CRUD Berita
     Route::resource('berita', BeritaController::class);
-    
+
+    // -- MANAJEMEN SURAT (ADMIN) --
+    // Gunakan yang ini saja (yang pakai method 'update')
+    Route::get('/admin/surat', [App\Http\Controllers\Admin\AdminSuratController::class, 'index'])->name('admin.surat.index');
+    Route::get('/admin/surat/{id}', [App\Http\Controllers\Admin\AdminSuratController::class, 'show'])->name('admin.surat.show');
+    Route::put('/admin/surat/{id}', [App\Http\Controllers\Admin\AdminSuratController::class, 'update'])->name('admin.surat.update');
 });
 
 /*
