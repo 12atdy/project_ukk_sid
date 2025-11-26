@@ -8,26 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Biodata extends Model
 {
     use HasFactory;
-
+    
     protected $table = 'biodata';
+    protected $guarded = ['id'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'nik',
-        'nama_lengkap',
-        'tempat_lahir',
-        'tanggal_lahir',
-        'jenis_kelamin',
-        'alamat',
-        'agama',
-        'status_perkawinan',
-        'status_hidup',
-        'status_kependudukan',
-        'pekerjaan',
-        // Tambahkan kolom lain dari tabel biodata-mu di sini jika ada
-    ];
+    // [BARU] Relasi balik ke User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

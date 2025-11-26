@@ -7,8 +7,8 @@ use App\Models\SuratAjuan;
 use App\Models\SuratDetailUsaha;
 use App\Models\SuratDetailNikah;
 use App\Models\SuratDetailTanah;
-use App\Models\SuratDetailKelahiran; 
-use App\Models\SuratDetailKematian;  
+use App\Models\SuratDetailKelahiran;
+use App\Models\SuratDetailKematian;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -20,14 +20,17 @@ class SuratAjuanController extends Controller
         return view('warga.surat.index', compact('suratSaya'));
     }
 
+    // [DIPERBARUI] Kirim data User & Biodata ke Form
     public function create()
     {
-        return view('warga.surat.create');
+        $user = Auth::user();
+        $biodata = $user->biodata; // Ambil data biodata dari user yang login
+        
+        return view('warga.surat.create', compact('user', 'biodata'));
     }
 
     public function store(Request $request)
     {
-        // 1. Validasi Umum
         $request->validate([
             'jenis_surat' => 'required|string',
             'keterangan'  => 'nullable|string',
@@ -35,7 +38,6 @@ class SuratAjuanController extends Controller
 
         DB::transaction(function () use ($request) {
             
-            // 2. Simpan Surat Utama (Induk)
             $surat = SuratAjuan::create([
                 'user_id'       => Auth::id(),
                 'jenis_surat'   => $request->jenis_surat,
@@ -44,9 +46,7 @@ class SuratAjuanController extends Controller
                 'keterangan'    => $request->keterangan,
             ]);
 
-            // 3. Simpan Detail Sesuai Jenis (Switch Case lebih rapi)
             switch ($request->jenis_surat) {
-                
                 case 'surat_usaha':
                     $request->validate(['nama_usaha' => 'required']);
                     SuratDetailUsaha::create([
@@ -85,7 +85,6 @@ class SuratAjuanController extends Controller
                     ]);
                     break;
 
-                // --- TAMBAHAN BARU ---
                 case 'surat_kelahiran':
                     $request->validate(['nama_bayi' => 'required', 'nama_ibu' => 'required']);
                     SuratDetailKelahiran::create([

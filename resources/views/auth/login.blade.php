@@ -33,11 +33,17 @@
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                 
                 <div class="text-center mt-3">
-                    <p class="mb-1 small">Aparatur Desa belum punya akun? <a href="{{ route('register') }}">Daftar Admin</a></p>
-                    <hr> <p class="mb-0 fw-bold">Anda Warga Desa?</p>
-                    <a href="{{ route('warga.register') }}" class="btn btn-outline-success w-100 btn-sm mt-1">
-                        Daftar Akun Warga
+                    <p class="mb-2 fw-bold text-muted">Belum punya akun?</p>
+                    
+                    <a href="{{ route('warga.register') }}" class="btn btn-outline-success w-100">
+                        <i class="fas fa-user-plus me-1"></i> Daftar Akun Warga
                     </a>
+                    
+                    <div class="mt-3">
+                        <a href="{{ url('/') }}" class="text-decoration-none small text-secondary">
+                            &larr; Kembali ke Halaman Depan
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>

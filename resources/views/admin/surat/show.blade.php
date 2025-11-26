@@ -80,7 +80,7 @@
                         </div>
 
                         <div class="d-flex gap-2">
-                            <button type="submit" name="status" value="disetujui" class="btn btn-success w-50">
+                            <button type="submit" name="status" value="selesai" class="btn btn-success w-50">
                                 <i class="fas fa-check-circle"></i> SETUJUI (ACC)
                             </button>
                             <button type="submit" name="status" value="ditolak" class="btn btn-danger w-50">
@@ -91,13 +91,21 @@
                     @endif
 
                     @if($surat->status != 'menunggu')
-                        <div class="alert alert-{{ $surat->status == 'disetujui' ? 'success' : 'danger' }} mt-4 text-center">
+                        <div class="alert alert-{{ $surat->status == 'selesai' ? 'success' : 'danger' }} mt-4 text-center">
                             <strong>Surat ini telah {{ strtoupper($surat->status) }}</strong>
                             @if($surat->nomor_surat)
-                                <br>Nomor Surat: {{ $surat->nomor_surat }}
+                                <br>Nomor Surat: <strong>{{ $surat->nomor_surat }}</strong>
                             @endif
                         </div>
-                    @endif
+
+                        @if($surat->status == 'selesai')
+                            <div class="text-center mt-3">
+                                <a href="{{ route('admin.surat.cetak', $surat->id) }}" class="btn btn-warning btn-lg px-5 fw-bold" target="_blank">
+                                    <i class="fas fa-print me-2"></i> CETAK SURAT (PDF)
+                                </a>
+                            </div>
+                        @endif
+                        @endif
 
                 </div>
             </div>

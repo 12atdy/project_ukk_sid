@@ -38,7 +38,7 @@
                             <td>
                                 @if($surat->status == 'menunggu')
                                     <span class="badge bg-warning text-dark">Menunggu</span>
-                                @elseif($surat->status == 'disetujui')
+                                @elseif($surat->status == 'selesai')
                                     <span class="badge bg-success">Disetujui</span>
                                 @else
                                     <span class="badge bg-danger">Ditolak</span>

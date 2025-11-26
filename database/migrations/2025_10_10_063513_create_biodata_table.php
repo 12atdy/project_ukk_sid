@@ -6,31 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up(): void
+    public function up(): void
     {
         Schema::create('biodata', function (Blueprint $table) {
-            $table->id(); // 1. Tipe ID diubah ke standar Laravel (BIGINT)
-            $table->string('nik', 16)->unique();
-            $table->string('nama_lengkap');
-            $table->string('tempat_lahir')->nullable();
-            $table->date('tanggal_lahir')->nullable();
-            $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
-            $table->string('agama')->nullable();
-            $table->string('status_perkawinan')->nullable();
-            // 2. Kolom aneh "Double-click..." sudah dihapus
-            $table->string('status_kependudukan')->nullable();
-            $table->string('pekerjaan')->nullable();
-            $table->text('alamat')->nullable();
-            $table->timestamps(); // 3. Cara standar Laravel untuk created_at & updated_at
+            $table->id();
+            
+            // [INI YANG DITAMBAHKAN] Kolom Penghubung ke User
+            // Supaya sistem tahu biodata ini milik siapa
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            
+            $table->string('nik')->unique();
+            $table->string('tempat_lahir');
+            $table->date('tanggal_lahir');
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
+            $table->text('alamat');
+            $table->string('pekerjaan');
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('biodata');

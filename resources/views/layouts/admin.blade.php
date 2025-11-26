@@ -18,9 +18,7 @@
         .nav-link { font-weight: 500; color: #333; }
         .nav-link:hover { color: #0d6efd; }
         .nav-link.active { color: #0d6efd; font-weight: bold; }
-        /* Agar konten tidak tertutup sidebar di layar besar */
         .main-content { margin-left: 220px; } 
-        /* Penyesuaian untuk layar kecil */
         @media (max-width: 767.98px) {
             .sidebar { top: 5rem; padding-top: .5rem; }
             .main-content { margin-left: 0; }
@@ -61,6 +59,9 @@
             <div class="sidebar-sticky pt-3">
                 <ul class="nav flex-column">
                     
+                    <!-- ============================================ -->
+                    <!-- MENU KHUSUS ADMIN -->
+                    <!-- ============================================ -->
                     @if(Auth::user()->role == 'admin')
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
@@ -77,21 +78,43 @@
                                 <i class="fas fa-newspaper me-2"></i> Kelola Berita
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('admin.surat.*') ? 'active' : '' }}" href="{{ route('admin.surat.index') }}">
+                                <i class="fas fa-envelope-open-text me-2"></i> Surat Masuk
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('admin.pengaduan.*') ? 'active' : '' }}" href="{{ route('admin.pengaduan.index') }}">
+                                <i class="fas fa-bullhorn me-2"></i> Pengaduan Masuk
+                            </a>
+                        </li>
                     
+                    <!-- ============================================ -->
+                    <!-- MENU KHUSUS WARGA -->
+                    <!-- ============================================ -->
                     @elseif(Auth::user()->role == 'warga')
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('warga.dashboard') ? 'active' : '' }}" href="{{ route('warga.dashboard') }}">
                                 <i class="fas fa-home me-2"></i> Portal Warga
                             </a>
                         </li>
+                        
+                        <!-- [BARU] MENU PROFIL SAYA -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-envelope me-2"></i> Ajukan Surat
+                            <a class="nav-link {{ Request::routeIs('warga.profil') ? 'active' : '' }}" href="{{ route('warga.profil') }}">
+                                <i class="fas fa-user-circle me-2"></i> Profil Saya
+                            </a>
+                        </li>
+                        <!-- [SELESAI KODE BARU] -->
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('surat.*') ? 'active' : '' }}" href="{{ route('surat.index') }}">
+                                <i class="fas fa-envelope me-2"></i> Layanan Surat
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-bullhorn me-2"></i> Buat Pengaduan
+                            <a class="nav-link {{ Request::routeIs('pengaduan.*') ? 'active' : '' }}" href="{{ route('pengaduan.index') }}">
+                                <i class="fas fa-comment-dots me-2"></i> Layanan Pengaduan
                             </a>
                         </li>
                     @endif

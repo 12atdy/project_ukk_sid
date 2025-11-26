@@ -11,4 +11,5 @@ class SuratDetailKematian extends Model
     
     protected $table = 'surat_detail_kematian';
     protected $guarded = ['id'];
+    public $timestamps = false;
 }

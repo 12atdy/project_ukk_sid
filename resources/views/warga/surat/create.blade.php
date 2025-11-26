@@ -7,6 +7,25 @@
             <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-envelope-open-text me-2"></i> Layanan Administrasi & Kependudukan</h5>
         </div>
         <div class="card-body p-4">
+            
+            <!-- [BARU] CEK BIODATA SEBELUM ISI FORM -->
+            <!-- Ini akan memberi tahu warga data siapa yang dipakai -->
+            @if(isset($biodata) && !$biodata->nik)
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Perhatian!</strong> Biodata Anda belum lengkap. 
+                    <a href="{{ route('warga.profil') }}" class="alert-link text-decoration-underline">Klik di sini untuk melengkapi Profil</a> agar data surat otomatis terisi dengan benar.
+                </div>
+            @else
+                <div class="alert alert-success py-2 mb-4 border-0 bg-success-subtle text-success-emphasis">
+                    <small>
+                        <i class="fas fa-user-check me-1"></i> 
+                        Mengajukan sebagai: <strong>{{ $user->name }}</strong> 
+                        @if(isset($biodata) && $biodata->nik) (NIK: {{ $biodata->nik }}) @endif
+                    </small>
+                </div>
+            @endif
+
             <form action="{{ route('surat.store') }}" method="POST">
                 @csrf
                 
@@ -28,6 +47,7 @@
                     </select>
                 </div>
 
+                <!-- Info Syarat -->
                 <div id="info_syarat" class="alert alert-info d-none">
                     <h6 class="fw-bold"><i class="fas fa-info-circle me-1"></i> Persyaratan Dokumen:</h6>
                     <ul id="list_syarat" class="mb-0 small"></ul>
@@ -35,6 +55,7 @@
                     <small class="fst-italic">*Harap bawa dokumen asli dan fotocopy tersebut ke kantor desa saat pengambilan surat.</small>
                 </div>
 
+                <!-- 1. FORM SURAT USAHA -->
                 <div id="form_surat_usaha" class="detail-form d-none p-3 mb-4 bg-light rounded border">
                     <h6 class="fw-bold text-success">Detail Usaha</h6>
                     <div class="row">
@@ -53,6 +74,7 @@
                     </div>
                 </div>
 
+                <!-- 2. FORM SURAT NIKAH -->
                 <div id="form_surat_nikah" class="detail-form d-none p-3 mb-4 bg-light rounded border">
                     <h6 class="fw-bold text-primary">Data Calon Pasangan</h6>
                     <div class="row">
@@ -92,6 +114,7 @@
                     </div>
                 </div>
 
+                <!-- 3. FORM SURAT TANAH -->
                 <div id="form_surat_tanah" class="detail-form d-none p-3 mb-4 bg-light rounded border">
                     <h6 class="fw-bold text-warning">Detail Tanah</h6>
                     <div class="row">
@@ -115,6 +138,7 @@
                     </div>
                 </div>
 
+                <!-- 4. FORM SURAT KELAHIRAN -->
                 <div id="form_surat_kelahiran" class="detail-form d-none p-3 mb-4 bg-light rounded border">
                     <h6 class="fw-bold text-info">Data Kelahiran</h6>
                     <div class="row">
@@ -131,7 +155,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Tempat Lahir</label>
-                            <input type="text" name="tempat_lahir_bayi" class="form-control">
+                            <input type="text" name="tempat_lahir_bayi" class="form-control" value="Sidoarjo">
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Tanggal Lahir</label>
@@ -161,6 +185,7 @@
                     </div>
                 </div>
 
+                <!-- 5. FORM SURAT KEMATIAN -->
                 <div id="form_surat_kematian" class="detail-form d-none p-3 mb-4 bg-light rounded border">
                     <h6 class="fw-bold text-danger">Data Kematian</h6>
                     <div class="row">
@@ -194,10 +219,15 @@
                             <textarea name="sebab_meninggal" class="form-control" rows="2" placeholder="Sakit tua / Kecelakaan / dll"></textarea>
                         </div>
                         <div class="col-12"><hr></div>
+                        
+                        <!-- [AUTO-FILL] BAGIAN INI YANG DITAMBAHKAN -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Nama Pelapor</label>
-                            <input type="text" name="nama_pelapor" class="form-control" placeholder="Nama Ahli Waris">
+                            <input type="text" name="nama_pelapor" class="form-control bg-light" value="{{ $user->name }}" readonly>
+                            <small class="text-muted">*Otomatis diambil dari nama akun Anda</small>
                         </div>
+                        <!-- [SELESAI AUTO-FILL] -->
+
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Hubungan Pelapor</label>
                             <input type="text" name="hubungan_pelapor" class="form-control" placeholder="Anak / Istri / Suami">

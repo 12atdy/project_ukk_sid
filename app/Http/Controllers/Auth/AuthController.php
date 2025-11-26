@@ -14,12 +14,6 @@ class AuthController extends Controller
     // BAGIAN FORM & LOGIN
     // ==========================================================
 
-    // Menampilkan form registrasi (Untuk Admin/Umum)
-    public function showRegisterForm()
-    {
-        return view('auth.register');
-    }
-
     // Menampilkan form registrasi KHUSUS WARGA
     public function showWargaRegisterForm()
     {
