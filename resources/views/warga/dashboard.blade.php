@@ -3,14 +3,15 @@
 @section('content')
 <div class="container">
     
-    <!-- Banner Selamat Datang -->
+    <!-- Banner Sapaan -->
     <div class="alert alert-primary shadow-sm border-0 mb-4">
         <h4 class="alert-heading fw-bold"><i class="fas fa-smile-beam me-2"></i> Selamat Datang, {{ Auth::user()->name }}!</h4>
-        <p class="mb-0">Selamat datang di Portal Layanan Mandiri Desa Sidokerto. Silakan pilih layanan di bawah ini.</p>
+        <p class="mb-0">Selamat datang di Portal Layanan Mandiri Desa Sidokerto. Apa yang ingin Anda lakukan hari ini?</p>
     </div>
 
     <!-- Menu Pintas (Shortcut) -->
     <div class="row mb-4">
+        <!-- Tombol Buat Surat -->
         <div class="col-md-4 mb-3">
             <a href="{{ route('surat.create') }}" class="card shadow-sm h-100 text-decoration-none border-0 bg-success text-white hover-scale">
                 <div class="card-body text-center d-flex flex-column justify-content-center align-items-center p-4">
@@ -20,6 +21,8 @@
                 </div>
             </a>
         </div>
+
+        <!-- Tombol Lapor -->
         <div class="col-md-4 mb-3">
             <a href="{{ route('pengaduan.create') }}" class="card shadow-sm h-100 text-decoration-none border-0 bg-danger text-white hover-scale">
                 <div class="card-body text-center d-flex flex-column justify-content-center align-items-center p-4">
@@ -29,6 +32,8 @@
                 </div>
             </a>
         </div>
+
+        <!-- Tombol Profil -->
         <div class="col-md-4 mb-3">
             <a href="{{ route('warga.profil') }}" class="card shadow-sm h-100 text-decoration-none border-0 bg-info text-white hover-scale">
                 <div class="card-body text-center d-flex flex-column justify-content-center align-items-center p-4">
@@ -87,6 +92,7 @@
 
 </div>
 
+<!-- Efek Hover biar tombolnya gerak dikit pas disorot -->
 <style>
     .hover-scale:hover { transform: scale(1.02); transition: transform 0.2s; }
 </style>

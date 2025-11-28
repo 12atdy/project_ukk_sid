@@ -99,13 +99,12 @@
                             </a>
                         </li>
                         
-                        <!-- [BARU] MENU PROFIL SAYA -->
+                        <!-- [MENU PROFIL SAYA - SUDAH ADA DISINI] -->
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('warga.profil') ? 'active' : '' }}" href="{{ route('warga.profil') }}">
                                 <i class="fas fa-user-circle me-2"></i> Profil Saya
                             </a>
                         </li>
-                        <!-- [SELESAI KODE BARU] -->
 
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('surat.*') ? 'active' : '' }}" href="{{ route('surat.index') }}">

@@ -5,7 +5,7 @@
     <!-- Judul Halaman -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800 fw-bold">Dashboard Admin</h1>
-        <span class="text-muted">{{ now()->isoFormat('dddd, D MMMM Y') }}</span>
+        <span class="text-muted">{{ now()->translatedFormat('l, d F Y') }}</span>
     </div>
 
     <!-- Baris Kartu Statistik -->
@@ -110,8 +110,8 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="{{ route('admin.surat.show', $surat->id) }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i>
+                                <a href="{{ route('admin.surat.show', $surat->id) }}" class="btn btn-info btn-sm text-white">
+                                    <i class="fas fa-eye"></i> Cek
                                 </a>
                             </td>
                         </tr>
