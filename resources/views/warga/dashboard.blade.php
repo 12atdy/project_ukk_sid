@@ -5,7 +5,9 @@
     
     <!-- Banner Sapaan -->
     <div class="alert alert-primary shadow-sm border-0 mb-4">
-        <h4 class="alert-heading fw-bold"><i class="fas fa-smile-beam me-2"></i> Selamat Datang, {{ Auth::user()->name }}!</h4>
+        <h4 class="alert-heading fw-bold">
+            <i class="fas fa-smile me-2"></i> Halo, {{ Auth::user()->name }}!
+        </h4>
         <p class="mb-0">Selamat datang di Portal Layanan Mandiri Desa Sidokerto. Apa yang ingin Anda lakukan hari ini?</p>
     </div>
 
@@ -92,7 +94,6 @@
 
 </div>
 
-<!-- Efek Hover biar tombolnya gerak dikit pas disorot -->
 <style>
     .hover-scale:hover { transform: scale(1.02); transition: transform 0.2s; }
 </style>

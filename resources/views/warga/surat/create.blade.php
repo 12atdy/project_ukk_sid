@@ -28,7 +28,22 @@
 
             <form action="{{ route('surat.store') }}" method="POST">
                 @csrf
-                
+
+                <div class="alert alert-primary mb-4">
+                    <h6 class="fw-bold"><i class="fas fa-user-circle me-2"></i> Data Pemohon (Otomatis)</h6>
+                    <div class="row small">
+                        <div class="col-md-4">
+                            <strong>Nama:</strong> <br> {{ $biodata->nama_lengkap ?? Auth::user()->name }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>NIK:</strong> <br> {{ $biodata->nik ?? '-' }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Alamat:</strong> <br> {{ $biodata->alamat ?? '-' }}
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-4">
                     <label class="form-label fw-bold">Pilih Layanan Surat</label>
                     <select name="jenis_surat" id="jenis_surat" class="form-select form-select-lg" required onchange="aturFormulir()">
@@ -223,7 +238,8 @@
                         <!-- [AUTO-FILL] BAGIAN INI YANG DITAMBAHKAN -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Nama Pelapor</label>
-                            <input type="text" name="nama_pelapor" class="form-control bg-light" value="{{ $user->name }}" readonly>
+                            <input type="text" name="nama_pelapor" class="form-control" 
+                            value="{{ $biodata->nama_lengkap ?? Auth::user()->name }}" readonly>
                             <small class="text-muted">*Otomatis diambil dari nama akun Anda</small>
                         </div>
                         <!-- [SELESAI AUTO-FILL] -->

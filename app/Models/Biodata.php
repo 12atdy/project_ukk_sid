@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Biodata extends Model
 {
     use HasFactory;
-    
-    protected $table = 'biodata';
-    protected $guarded = ['id'];
 
-    // [BARU] Relasi balik ke User
+    // Pastikan nama tabelnya benar (biasanya Laravel nyari 'biodatas')
+    protected $table = 'biodata'; 
+
+    // IZINKAN SEMUA KOLOM DIISI (Biar gak error Mass Assignment)
+    protected $guarded = ['id']; 
+
+    // Relasi balik ke User (Opsional tapi bagus ada)
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

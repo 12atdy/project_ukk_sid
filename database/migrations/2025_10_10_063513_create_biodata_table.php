@@ -6,25 +6,35 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    /**
+     * Run the migrations.
+     */
+   public function up(): void
     {
         Schema::create('biodata', function (Blueprint $table) {
             $table->id();
             
-            // [INI YANG DITAMBAHKAN] Kolom Penghubung ke User
-            // Supaya sistem tahu biodata ini milik siapa
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            // WAJIB ADA: Relasi ke tabel users
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             
-            $table->string('nik')->unique();
-            $table->string('tempat_lahir');
-            $table->date('tanggal_lahir');
-            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
-            $table->text('alamat');
-            $table->string('pekerjaan');
+            $table->string('nik', 16)->unique();
+            $table->string('no_kk', 16)->nullable(); // Tambahan kolom No KK
+            $table->string('nama_lengkap');
+            $table->string('tempat_lahir')->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable(); // Sesuaikan dengan seeder
+            $table->string('agama')->nullable(); // Tambahan kolom Agama
+            $table->string('status_perkawinan')->nullable(); // Di seeder 'Kawin', nanti kita sesuaikan
+            $table->string('status_kependudukan')->nullable();
+            $table->string('pekerjaan')->nullable();
+            $table->text('alamat')->nullable();
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('biodata');

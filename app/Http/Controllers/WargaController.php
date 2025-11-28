@@ -5,26 +5,37 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Biodata;
+use App\Models\SuratAjuan; 
+use App\Models\Pengaduan;
 
 class WargaController extends Controller
 {
-    // Dashboard Warga
+    // 1. Dashboard Warga (Tampilkan Statistik & Pintasan)
     public function index()
     {
-        return view('warga.dashboard');
+        $user = Auth::user();
+        
+        // Hitung statistik PRIBADI (Bukan semua warga)
+        $totalSurat = SuratAjuan::where('user_id', $user->id)->count();
+        $suratSelesai = SuratAjuan::where('user_id', $user->id)->where('status', 'selesai')->count();
+        $pengaduanSaya = Pengaduan::where('user_id', $user->id)->count();
+
+        // Ambil 3 Riwayat Terakhir
+        $riwayatTerakhir = SuratAjuan::where('user_id', $user->id)->latest()->take(3)->get();
+
+        return view('warga.dashboard', compact('user', 'totalSurat', 'suratSelesai', 'pengaduanSaya', 'riwayatTerakhir'));
     }
 
-    // [BARU] Halaman Profil Saya
+    // 2. Halaman Profil
     public function profil()
     {
         $user = Auth::user();
-        // Ambil biodata, kalau kosong bikin baru (biar gak error di view)
         $biodata = $user->biodata ?? new Biodata(); 
         
         return view('warga.profil', compact('user', 'biodata'));
     }
 
-    // [BARU] Proses Simpan Biodata
+    // 3. Proses Simpan Profil
     public function updateProfil(Request $request)
     {
         $request->validate([
@@ -36,9 +47,8 @@ class WargaController extends Controller
             'pekerjaan' => 'required',
         ]);
 
-        // Simpan atau Update data
         Biodata::updateOrCreate(
-            ['user_id' => Auth::id()], // Kunci: cari berdasarkan ID user yg login
+            ['user_id' => Auth::id()], 
             [
                 'nik' => $request->nik,
                 'tempat_lahir' => $request->tempat_lahir,
