@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\lOGAktivitas;
 
 class AuthController extends Controller
 {
@@ -38,6 +39,12 @@ class AuthController extends Controller
         // 2. Coba autentikasi
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+
+            // REKAM AKTIVITAS
+            LogAktivitas::create([
+                'user_id' => Auth::id(),
+                'aktivitas' => 'Melakukan Login ke dalam sistem',
+            ]);
 
             // Cek Role untuk Redirect
             if (Auth::user()->role == 'admin') {

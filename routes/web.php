@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BiodataController;
@@ -7,9 +8,24 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\Admin\AdminSuratController; 
 use App\Http\Controllers\PengaduanController; 
+use App\Models\Berita;
+
 
 Route::get('/', function () {
-    return view('home');
+    // 1. Cek jika user sudah login, langsung arahkan ke dashboard masing-masing
+    if (Auth::check()) {
+        if (Auth::user()->role == 'admin') {
+            return redirect()->route('dashboard');
+        } elseif (Auth::user()->role == 'warga') {
+            return redirect()->route('warga.dashboard');
+        }
+    }
+
+    // 2. Ambil 3 Berita Terbaru untuk ditampilkan di halaman depan
+    $beritaTerbaru = Berita::latest()->take(3)->get();
+
+    // 3. Tampilkan halaman welcome dengan membawa data berita
+    return view('welcome', compact('beritaTerbaru'));
 });
 
 Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -33,6 +49,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/pengaduan', [PengaduanController::class, 'index'])->name('admin.pengaduan.index');
     Route::get('/admin/pengaduan/{id}', [PengaduanController::class, 'show'])->name('admin.pengaduan.show');
     Route::post('/admin/pengaduan/{id}/tanggapi', [PengaduanController::class, 'tanggapi'])->name('admin.pengaduan.tanggapi');
+
+    // Log Aktivitas
+    Route::get('/admin/log', function() {
+        $logs = \App\Models\LogAktivitas::with('user')->latest()->paginate(20);
+        return view('admin.log.index', compact('logs'));
+    })->name('admin.log.index');
 });
 
 // --- WARGA ---

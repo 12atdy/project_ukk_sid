@@ -26,8 +26,22 @@
                     <hr>
 
                     <h6 class="fw-bold text-gray-800">B. Detail Informasi Surat</h6>
-                    <div class="bg-light p-3 rounded border">
+                    <div class="bg-light p-3 rounded border mb-3">
                         
+                        @if($surat->foto_lampiran)
+                            <div class="mb-3 text-center">
+                                <p class="fw-bold small text-muted mb-1">Bukti Lampiran Warga:</p>
+                                <img src="{{ asset('storage/' . $surat->foto_lampiran) }}" 
+                                     class="img-fluid rounded shadow-sm border" 
+                                     style="max-height: 300px;">
+                                <br>
+                                <a href="{{ asset('storage/' . $surat->foto_lampiran) }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                                    <i class="fas fa-expand me-1"></i> Lihat Ukuran Penuh
+                                </a>
+                            </div>
+                            <hr>
+                        @endif
+
                         @if($surat->jenis_surat == 'surat_usaha' && $surat->detailUsaha)
                             <p><strong>Nama Usaha:</strong> {{ $surat->detailUsaha->nama_usaha }}</p>
                             <p><strong>Jenis Usaha:</strong> {{ $surat->detailUsaha->jenis_usaha }}</p>

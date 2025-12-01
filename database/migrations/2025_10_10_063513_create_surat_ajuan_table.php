@@ -17,6 +17,7 @@ return new class extends Migration
         $table->string('jenis_surat');
         $table->string('nomor_surat')->nullable()->unique();
         $table->date('tanggal_ajuan');
+        $table->string('foto_lampiran')->nullable();
         $table->enum('status', ['menunggu', 'diproses', 'selesai', 'ditolak'])->default('menunggu');
         $table->text('keterangan_admin')->nullable();
         $table->timestamps();

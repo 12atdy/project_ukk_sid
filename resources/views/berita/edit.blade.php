@@ -1,43 +1,94 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h4 class="mb-0">Form Edit Berita</h4>
+<div class="container-fluid">
+    
+    <!-- Header Page -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800 fw-bold"><i class="fas fa-newspaper me-2"></i> Manajemen Berita</h1>
+        <a href="{{ route('berita.create') }}" class="btn btn-primary btn-sm shadow-sm rounded-pill px-3">
+            <i class="fas fa-plus fa-sm text-white-50 me-1"></i> Tulis Berita Baru
+        </a>
     </div>
-    <div class="card-body">
-        <form action="{{ route('berita.update', $berita->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT') <div class="mb-3">
-                <label class="form-label"><strong>Gambar Sampul</strong></label>
-                <input type="file" class="form-control @error('gambar') is-invalid @enderror" name="gambar">
-                <div class="mt-2">
-                    <img src="{{ asset('storage/berita/'.$berita->gambar) }}" width="150" class="rounded">
+
+    <!-- Content Row -->
+    <div class="card border-0 shadow rounded-3">
+        <div class="card-body">
+            
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-                @error('gambar')
-                    <div class="alert alert-danger mt-2">{{ $message }}</div>
-                @enderror
+            @endif
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light text-uppercase small text-muted">
+                        <tr>
+                            <th width="5%">No</th>
+                            <th width="15%">Gambar</th>
+                            <th width="40%">Judul & Cuplikan</th>
+                            <th width="15%">Penulis</th>
+                            <th width="15%">Tanggal</th>
+                            <th width="10%" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($semuaBerita as $index => $berita)
+                        <tr>
+                            <td class="fw-bold text-center">{{ $semuaBerita->firstItem() + $index }}</td>
+                            <td>
+                                <img src="{{ asset('storage/berita/' . $berita->gambar) }}" 
+                                     class="img-fluid rounded shadow-sm" 
+                                     style="width: 80px; height: 60px; object-fit: cover;">
+                            </td>
+                            <td>
+                                <h6 class="fw-bold mb-1 text-dark">{{ Str::limit($berita->judul, 50) }}</h6>
+                                <p class="small text-muted mb-0">{{ Str::limit($berita->isi, 60) }}</p>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary fw-normal">
+                                    <i class="fas fa-user-edit me-1"></i> {{ $berita->user->name }}
+                                </span>
+                            </td>
+                            <td class="small">
+                                <i class="far fa-calendar-alt me-1"></i> {{ $berita->created_at->format('d M Y') }} <br>
+                                <span class="text-muted">{{ $berita->created_at->format('H:i') }} WIB</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('berita.edit', $berita->id) }}" class="btn btn-sm btn-outline-info" title="Edit">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                    <form action="{{ route('berita.destroy', $berita->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus berita ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="80" class="mb-3 opacity-25">
+                                <p class="mb-0">Belum ada berita yang dipublikasikan.</p>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="mt-3 d-flex justify-content-end">
+                {{ $semuaBerita->links() }}
             </div>
 
-            <div class="mb-3">
-                <label class="form-label"><strong>Judul Berita</strong></label>
-                <input type="text" class="form-control @error('judul') is-invalid @enderror" name="judul" value="{{ old('judul', $berita->judul) }}" placeholder="Masukkan Judul Berita">
-                @error('judul')
-                    <div class="alert alert-danger mt-2">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label"><strong>Isi Berita</strong></label>
-                <textarea class="form-control @error('isi') is-invalid @enderror" name="isi" rows="5" placeholder="Masukkan Isi Berita">{{ old('isi', $berita->isi) }}</textarea>
-                @error('isi')
-                    <div class="alert alert-danger mt-2">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <button type="submit" class="btn btn-primary">UPDATE PERUBAHAN</button>
-            <a href="{{ route('berita.index') }}" class="btn btn-secondary">KEMBALI</a>
-        </form>
+        </div>
     </div>
 </div>
 @endsection

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SuratAjuan;
+use App\Models\LogAktivitas;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class AdminSuratController extends Controller
 {
@@ -41,6 +43,12 @@ class AdminSuratController extends Controller
             // Jika disetujui, kita buatkan nomor surat otomatis
             // Format: SRT/NomorAcak/Tahun (Bisa disesuaikan nanti)
             'nomor_surat' => $request->status == 'selesai' ? 'SRT/'.rand(100,999).'/'.date('Y') : null
+        ]);
+
+        // REKAM AKTIVITAS
+        LogAktivitas::create([
+            'user_id' => Auth::id(), // ID Admin yang sedang login
+            'aktivitas' => 'Memverifikasi surat milik ' . $surat->user->name . ' menjadi ' . $request->status,
         ]);
 
         return redirect()->route('admin.surat.index')->with('success', 'Status surat berhasil diperbarui!');
