@@ -36,7 +36,7 @@
                     <p class="mb-2 fw-bold text-muted">Belum punya akun?</p>
                     
                     <a href="{{ route('warga.register') }}" class="btn btn-outline-success w-100">
-                        <i class="fas fa-user-plus me-1"></i> Daftar Akun Warga
+                        <i class="fas fa-user-plus me-1"></i> Daftar Akun
                     </a>
                     
                     <div class="mt-3">

@@ -28,6 +28,9 @@ Route::get('/', function () {
     return view('welcome', compact('beritaTerbaru'));
 });
 
+// Route untuk baca detail berita (Bisa diakses siapa saja)
+Route::get('/berita/baca/{id}', [BeritaController::class, 'baca'])->name('berita.baca');
+
 Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login.post');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');

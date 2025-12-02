@@ -3,6 +3,7 @@
 @section('content')
 <div class="container">
     
+    <!-- HEADER -->
     <div class="text-center mb-5">
         <h2 class="fw-bold text-primary">Layanan Surat Menyurat</h2>
         <p class="text-muted">Ajukan permohonan surat administrasi desa secara mandiri, cepat, dan mudah.</p>
@@ -14,6 +15,7 @@
             <form action="{{ route('surat.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
+                <!-- 1. DATA PEMOHON (AUTO-FILL) -->
                 <div class="card border-0 shadow-sm mb-4 rounded-3">
                     <div class="card-header bg-white py-3">
                         <h6 class="fw-bold text-primary m-0"><i class="fas fa-user-check me-2"></i> Data Pemohon (Otomatis)</h6>
@@ -36,6 +38,7 @@
                     </div>
                 </div>
 
+                <!-- 2. PILIH JENIS SURAT -->
                 <div class="card border-0 shadow-lg mb-4 rounded-3">
                     <div class="card-body p-4">
                         <label class="form-label fw-bold h5">Jenis Surat Apa yang Anda Butuhkan?</label>
@@ -47,11 +50,13 @@
                                 <option value="surat_tanah">🏞️ Surat Keterangan Tanah</option>
                             </optgroup>
                             <optgroup label="Layanan Kependudukan">
+                                <option value="surat_domisili">🚚 Surat Pindah Domisili</option>
                                 <option value="surat_kelahiran">👶 Surat Keterangan Kelahiran</option>
                                 <option value="surat_kematian">⚰️ Surat Keterangan Kematian</option>
                             </optgroup>
                         </select>
 
+                        <!-- INFO SYARAT (Hidden by default) -->
                         <div id="info_syarat" class="alert alert-info border-0 d-none shadow-sm">
                             <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i> Persyaratan Dokumen:</h6>
                             <ul id="list_syarat" class="mb-0 small ps-3"></ul>
@@ -61,14 +66,17 @@
                     </div>
                 </div>
 
+                <!-- 3. FORMULIR DETAIL (Dynamic) -->
                 <div class="card border-0 shadow mb-4 rounded-3">
                     <div class="card-body p-4">
                         
+                        <!-- Placeholder (Jika belum pilih) -->
                         <div id="form_placeholder" class="text-center py-5 text-muted">
                             <i class="fas fa-file-alt fa-3x mb-3 opacity-25"></i>
                             <p>Silakan pilih jenis surat di atas untuk mengisi formulir.</p>
                         </div>
 
+                        <!-- A. FORM USAHA -->
                         <div id="form_surat_usaha" class="detail-form d-none">
                             <h5 class="fw-bold text-success mb-4 border-bottom pb-2">Detail Usaha</h5>
                             <div class="row g-3">
@@ -87,6 +95,7 @@
                             </div>
                         </div>
 
+                        <!-- B. FORM NIKAH -->
                         <div id="form_surat_nikah" class="detail-form d-none">
                             <h5 class="fw-bold text-pink mb-4 border-bottom pb-2" style="color: #e83e8c">Data Calon Pasangan</h5>
                             <div class="row g-3">
@@ -119,6 +128,7 @@
                             </div>
                         </div>
 
+                        <!-- C. FORM TANAH -->
                         <div id="form_surat_tanah" class="detail-form d-none">
                             <h5 class="fw-bold text-warning mb-4 border-bottom pb-2">Detail Tanah</h5>
                             <div class="row g-3">
@@ -142,6 +152,7 @@
                             </div>
                         </div>
 
+                        <!-- D. FORM KELAHIRAN -->
                         <div id="form_surat_kelahiran" class="detail-form d-none">
                             <h5 class="fw-bold text-info mb-4 border-bottom pb-2">Data Bayi & Orang Tua</h5>
                             <div class="row g-3">
@@ -156,6 +167,7 @@
                             </div>
                         </div>
 
+                        <!-- E. FORM KEMATIAN -->
                         <div id="form_surat_kematian" class="detail-form d-none">
                             <h5 class="fw-bold text-dark mb-4 border-bottom pb-2">Data Kematian</h5>
                             <div class="row g-3">
@@ -170,15 +182,44 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-warning border-0 shadow-sm mt-4">
+                        <!-- F. FORM DOMISILI (PINDAH) - BARU -->
+                        <div id="form_surat_domisili" class="detail-form d-none">
+                            <h5 class="fw-bold text-primary mb-4 border-bottom pb-2">Detail Kepindahan</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Alamat Asal (Kota A)</label>
+                                    <textarea name="alamat_asal" class="form-control" rows="3" placeholder="Contoh: Desa Sidokerto, Kec. Buduran, Kab. Sidoarjo">{{ $biodata->alamat ?? '' }}</textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Alamat Tujuan (Kota B)</label>
+                                    <textarea name="alamat_tujuan" class="form-control" rows="3" placeholder="Contoh: Jl. Sudirman No 5, Jakarta Pusat"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Alasan Pindah</label>
+                                    <select name="alasan_pindah" class="form-select">
+                                        <option value="Pekerjaan">Pekerjaan / Dinas</option>
+                                        <option value="Pendidikan">Pendidikan / Sekolah</option>
+                                        <option value="Ikut Suami/Istri">Ikut Suami/Istri</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Jumlah Pengikut</label>
+                                    <input type="number" name="jumlah_pengikut" class="form-control" value="0" placeholder="0 jika sendiri">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UPLOAD FOTO (WAJIB UNTUK SEMUA) -->
+                        <div class="alert alert-warning border-0 shadow-sm mt-4 mb-4">
                             <h6 class="fw-bold text-dark"><i class="fas fa-camera me-2"></i> Bukti Lampiran (Wajib)</h6>
-                            <p class="small mb-2">Silakan upload foto KTP / KK / Surat Pengantar RT/RW sebagai syarat.</p>
-                            
+                            <p class="small mb-2">Silakan upload foto KTP / KK / Surat Pengantar RT/RW sebagai syarat verifikasi.</p>
                             <input type="file" name="foto_lampiran" class="form-control" accept="image/*" required>
                             <small class="text-muted">*Format: JPG/PNG, Maks: 2MB</small>
                         </div>
 
-                        <div class="mt-4 pt-3 border-top">
+                        <!-- CATATAN TAMBAHAN (Selalu Muncul) -->
+                        <div class="mt-3">
                             <label class="form-label fw-bold">Catatan Tambahan (Opsional)</label>
                             <textarea name="keterangan" class="form-control bg-light" rows="2" placeholder="Contoh: Saya butuh surat ini secepatnya..."></textarea>
                         </div>
@@ -204,7 +245,8 @@
         "surat_nikah": ["KTP & KK Calon Suami Istri", "Ijazah Terakhir", "Akta Kelahiran", "Foto 2x3 & 3x4 (Background Biru)"],
         "surat_tanah": ["Fotocopy KTP & KK", "Letter C / Sertifikat Asli", "Bukti Pembayaran PBB"],
         "surat_kelahiran": ["KTP Ayah & Ibu", "KK", "Buku Nikah / Akta Nikah", "Surat Keterangan Lahir dari Bidan/RS"],
-        "surat_kematian": ["KTP Almarhum", "KK Asli", "KTP Pelapor"]
+        "surat_kematian": ["KTP Almarhum", "KK Asli", "KTP Pelapor"],
+        "surat_domisili": ["KTP & KK Asli", "Pas Foto 4x6 (3 Lembar)", "Alamat Tujuan Lengkap"]
     };
 
     function aturFormulir() {

@@ -45,4 +45,9 @@ class SuratAjuan extends Model
     {
         return $this->hasOne(SuratDetailKematian::class, 'ajuan_id');
     }
+
+    public function detailDomisili()
+    {
+        return $this->hasOne(SuratDetailDomisili::class, 'ajuan_id');
+    }
 }

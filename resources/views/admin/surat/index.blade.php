@@ -8,9 +8,22 @@
     </div>
 
     <div class="card border-0 shadow rounded-3">
-        <div class="card-header bg-white py-3">
-            <h6 class="m-0 fw-bold text-primary">Daftar Permohonan Warga</h6>
+        <!-- Bagian Header Card dengan Form Pencarian -->
+        <div class="card-header bg-white py-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <h6 class="m-0 fw-bold text-primary mb-2 mb-md-0">Daftar Permohonan Warga</h6>
+            
+            <!-- FORM PENCARIAN -->
+            <form action="{{ route('admin.surat.index') }}" method="GET" class="d-flex">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control bg-light border-0 small" 
+                           placeholder="Cari nama / jenis surat..." value="{{ request('search') }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </form>
         </div>
+
         <div class="card-body">
             
             @if(session('success'))
@@ -34,7 +47,8 @@
                     <tbody>
                         @forelse($suratMasuk as $index => $surat)
                         <tr>
-                            <td class="text-center fw-bold">{{ $index + 1 }}</td>
+                            <!-- Nomor urut yang nyambung antar halaman (Pagination aware) -->
+                            <td class="text-center fw-bold">{{ $suratMasuk->firstItem() + $index }}</td>
                             <td>
                                 <div class="fw-bold">{{ \Carbon\Carbon::parse($surat->tanggal_ajuan)->format('d M Y') }}</div>
                                 <small class="text-muted">{{ $surat->created_at->format('H:i') }} WIB</small>
@@ -74,13 +88,22 @@
                         <tr>
                             <td colspan="6" class="text-center py-5">
                                 <i class="fas fa-folder-open fa-3x text-gray-300 mb-3"></i>
-                                <p class="text-muted">Tidak ada surat masuk saat ini.</p>
+                                <p class="text-muted">Data surat tidak ditemukan.</p>
+                                @if(request('search'))
+                                    <a href="{{ route('admin.surat.index') }}" class="btn btn-sm btn-outline-secondary">Reset Pencarian</a>
+                                @endif
                             </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
+            <!-- NAVIGASI HALAMAN (Pagination Links) -->
+            <div class="d-flex justify-content-end mt-4">
+                {{ $suratMasuk->links() }}
+            </div>
+
         </div>
     </div>
 </div>

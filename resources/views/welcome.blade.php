@@ -34,7 +34,8 @@
             clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
         }
 
-        /* SERVICES CARD */
+        /* SERVICES CARD (BISA DIKLIK) */
+        .service-link { text-decoration: none; color: inherit; display: block; height: 100%; }
         .service-card {
             border: none;
             border-radius: 20px;
@@ -42,16 +43,22 @@
             background: white;
             padding: 2rem;
             height: 100%;
+            cursor: pointer; /* Menandakan bisa diklik */
         }
         .service-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            background-color: #f8fcff; /* Sedikit biru saat dihover */
         }
         .icon-box {
             width: 80px; height: 80px;
             border-radius: 20px;
             display: flex; align-items: center; justify-content: center;
             font-size: 2rem; margin-bottom: 1.5rem;
+            transition: 0.3s;
+        }
+        .service-card:hover .icon-box {
+            transform: scale(1.1); /* Icon membesar dikit pas hover */
         }
 
         /* BERITA CARD */
@@ -107,9 +114,15 @@
                     <h1 class="display-3 fw-bold mb-4">Sistem Informasi Desa Sidokerto</h1>
                     <p class="lead mb-5 opacity-90">Nikmati kemudahan mengurus administrasi surat, pelaporan masalah, dan akses informasi desa terbaru secara online, cepat, dan transparan.</p>
                     <div class="d-flex gap-3">
-                        <a href="{{ route('login') }}" class="btn btn-light btn-lg text-primary fw-bold rounded-pill px-5 shadow">
-                            Mulai Sekarang <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
+                        @auth
+                            <a href="{{ route('warga.dashboard') }}" class="btn btn-light btn-lg text-primary fw-bold rounded-pill px-5 shadow">
+                                Ke Dashboard <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-light btn-lg text-primary fw-bold rounded-pill px-5 shadow">
+                                Mulai Sekarang <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        @endauth
                         <a href="#layanan" class="btn btn-outline-light btn-lg rounded-pill px-4">Pelajari Lebih</a>
                     </div>
                 </div>
@@ -117,40 +130,53 @@
         </div>
     </header>
 
-    <!-- LAYANAN KAMI -->
+    <!-- LAYANAN KAMI (Card Bisa Diklik) -->
     <section id="layanan" class="py-5" style="margin-top: -50px;">
         <div class="container">
             <div class="row justify-content-center g-4">
-                <!-- Card 1 -->
+                
+                <!-- Card 1: Surat Online (Link ke Dashboard/Login) -->
                 <div class="col-md-4">
-                    <div class="service-card shadow">
-                        <div class="icon-box bg-primary bg-opacity-10 text-primary">
-                            <i class="fas fa-envelope-open-text"></i>
+                    <a href="{{ Auth::check() ? route('surat.index') : route('login') }}" class="service-link">
+                        <div class="service-card shadow">
+                            <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-envelope-open-text"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark">Surat Online</h4>
+                            <p class="text-muted">Ajukan surat pengantar nikah, usaha, domisili, dan lainnya dari rumah. Hemat waktu tanpa antre.</p>
+                            <span class="text-primary fw-bold small">Akses Layanan &rarr;</span>
                         </div>
-                        <h4 class="fw-bold">Surat Online</h4>
-                        <p class="text-muted">Ajukan surat pengantar nikah, usaha, domisili, dan lainnya dari rumah. Hemat waktu tanpa antre.</p>
-                    </div>
+                    </a>
                 </div>
-                <!-- Card 2 -->
+
+                <!-- Card 2: Layanan Pengaduan (Link ke Pengaduan) -->
                 <div class="col-md-4">
-                    <div class="service-card shadow">
-                        <div class="icon-box bg-danger bg-opacity-10 text-danger">
-                            <i class="fas fa-bullhorn"></i>
+                    <a href="{{ Auth::check() ? route('pengaduan.index') : route('login') }}" class="service-link">
+                        <div class="service-card shadow">
+                            <div class="icon-box bg-danger bg-opacity-10 text-danger">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark">Layanan Pengaduan</h4>
+                            <p class="text-muted">Laporkan masalah lingkungan atau fasilitas desa. Pantau respon dan penyelesaiannya secara realtime.</p>
+                            <span class="text-danger fw-bold small">Buat Laporan &rarr;</span>
                         </div>
-                        <h4 class="fw-bold">Layanan Pengaduan</h4>
-                        <p class="text-muted">Laporkan masalah lingkungan atau fasilitas desa. Pantau respon dan penyelesaiannya secara realtime.</p>
-                    </div>
+                    </a>
                 </div>
-                <!-- Card 3 -->
+
+                <!-- Card 3: Berita Desa (Link Scroll ke Bawah) -->
                 <div class="col-md-4">
-                    <div class="service-card shadow">
-                        <div class="icon-box bg-success bg-opacity-10 text-success">
-                            <i class="fas fa-newspaper"></i>
+                    <a href="#berita" class="service-link">
+                        <div class="service-card shadow">
+                            <div class="icon-box bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark">Berita Desa</h4>
+                            <p class="text-muted">Dapatkan informasi terbaru seputar kegiatan, pengumuman, dan transparansi anggaran desa.</p>
+                            <span class="text-success fw-bold small">Baca Berita &rarr;</span>
                         </div>
-                        <h4 class="fw-bold">Berita Desa</h4>
-                        <p class="text-muted">Dapatkan informasi terbaru seputar kegiatan, pengumuman, dan transparansi anggaran desa.</p>
-                    </div>
+                    </a>
                 </div>
+
             </div>
         </div>
     </section>
@@ -173,7 +199,7 @@
                         </div>
                         <div class="card-body p-4">
                             <h5 class="card-title fw-bold mb-3">
-                                <a href="#" class="text-dark text-decoration-none stretched-link">{{ Str::limit($item->judul, 50) }}</a>
+                                <a href="{{ route('berita.baca', $item->id) }}" class="text-dark text-decoration-none stretched-link">{{ Str::limit($item->judul, 50) }}</a>
                             </h5>
                             <p class="card-text text-muted small">{{ Str::limit($item->isi, 100) }}</p>
                         </div>
@@ -184,7 +210,10 @@
                 </div>
                 @empty
                 <div class="col-12 text-center py-5">
-                    <p class="text-muted">Belum ada berita yang dipublikasikan.</p>
+                    <div class="alert alert-light border shadow-sm d-inline-block px-5">
+                        <i class="fas fa-newspaper fa-2x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">Belum ada berita yang dipublikasikan.</p>
+                    </div>
                 </div>
                 @endforelse
             </div>
@@ -196,8 +225,8 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-5 mb-4 mb-lg-0 text-center">
-                    <!-- Placeholder Foto Kades (Ganti src jika ada fotonya) -->
-                    <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center shadow" style="width: 300px; height: 300px; overflow: hidden;">
+                    <!-- Placeholder Foto Kades -->
+                    <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center shadow" style="width: 300px; height: 300px; overflow: hidden; border: 5px solid white;">
                         <i class="fas fa-user-tie fa-8x text-secondary opacity-25"></i>
                     </div>
                 </div>
@@ -211,7 +240,6 @@
                     
                     <div class="mt-4">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Logo_of_the_Ministry_of_Home_Affairs_of_the_Republic_of_Indonesia.svg/600px-Logo_of_the_Ministry_of_Home_Affairs_of_the_Republic_of_Indonesia.svg.png" height="40" class="me-3 opacity-50">
-                        <!-- Tambah logo lain jika ada -->
                     </div>
                 </div>
             </div>
@@ -259,7 +287,6 @@
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Script agar navbar berubah warna saat discroll
         const navbar = document.getElementById('mainNav');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {

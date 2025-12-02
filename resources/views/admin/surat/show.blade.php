@@ -5,43 +5,46 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             
-            <a href="{{ route('admin.surat.index') }}" class="btn btn-secondary mb-3 btn-sm">
-                <i class="fas fa-arrow-left"></i> Kembali
+            <a href="{{ route('admin.surat.index') }}" class="btn btn-secondary mb-3 btn-sm shadow-sm rounded-pill px-3">
+                <i class="fas fa-arrow-left me-1"></i> Kembali
             </a>
 
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Detail Pengajuan: {{ strtoupper(str_replace('_', ' ', $surat->jenis_surat)) }}</h5>
-                    <span class="badge bg-light text-dark">{{ $surat->status }}</span>
+            <!-- KARTU DETAIL SURAT -->
+            <div class="card shadow mb-4 border-0 rounded-3">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+                    <h5 class="mb-0 fw-bold">Detail: {{ strtoupper(str_replace('_', ' ', $surat->jenis_surat)) }}</h5>
+                    <span class="badge bg-light text-dark border">{{ ucfirst($surat->status) }}</span>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     
-                    <h6 class="fw-bold text-gray-800">A. Data Pemohon</h6>
+                    <!-- A. Data Pemohon -->
+                    <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="fas fa-user me-2"></i> Data Pemohon</h6>
                     <table class="table table-borderless table-sm mb-4">
-                        <tr><td width="150">Nama Lengkap</td><td>: {{ $surat->user->name }}</td></tr>
-                        <tr><td>NIK</td><td>: {{ $surat->user->biodata->nik ?? '-' }}</td></tr>
-                        <tr><td>Tanggal Ajuan</td><td>: {{ $surat->tanggal_ajuan }}</td></tr>
+                        <tr><td width="35%" class="text-muted">Nama Lengkap</td><td class="fw-bold">: {{ $surat->user->name }}</td></tr>
+                        <tr><td class="text-muted">NIK</td><td class="fw-bold">: {{ $surat->user->biodata->nik ?? '-' }}</td></tr>
+                        <tr><td class="text-muted">Tanggal Pengajuan</td><td class="fw-bold">: {{ \Carbon\Carbon::parse($surat->tanggal_ajuan)->format('d F Y') }}</td></tr>
                     </table>
 
-                    <hr>
-
-                    <h6 class="fw-bold text-gray-800">B. Detail Informasi Surat</h6>
+                    <!-- B. Detail Informasi Surat -->
+                    <h6 class="fw-bold text-primary border-bottom pb-2 mb-3"><i class="fas fa-file-alt me-2"></i> Isi Surat</h6>
                     <div class="bg-light p-3 rounded border mb-3">
                         
+                        <!-- TAMPILKAN FOTO BUKTI (JIKA ADA) -->
                         @if($surat->foto_lampiran)
-                            <div class="mb-3 text-center">
-                                <p class="fw-bold small text-muted mb-1">Bukti Lampiran Warga:</p>
-                                <img src="{{ asset('storage/' . $surat->foto_lampiran) }}" 
+                            <div class="mb-4 text-center">
+                                <p class="fw-bold small text-muted mb-2">Bukti Lampiran Warga:</p>
+                                <img src="{{ asset('storage/lampiran-surat/' . $surat->foto_lampiran) }}" 
                                      class="img-fluid rounded shadow-sm border" 
-                                     style="max-height: 300px;">
+                                     style="max-height: 300px;" alt="Bukti Lampiran">
                                 <br>
-                                <a href="{{ asset('storage/' . $surat->foto_lampiran) }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                                <a href="{{ asset('storage/lampiran-surat/' . $surat->foto_lampiran) }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2 rounded-pill">
                                     <i class="fas fa-expand me-1"></i> Lihat Ukuran Penuh
                                 </a>
                             </div>
                             <hr>
                         @endif
-
+                        
+                        <!-- LOGIKA TAMPILAN DETAIL PER JENIS SURAT -->
                         @if($surat->jenis_surat == 'surat_usaha' && $surat->detailUsaha)
                             <p><strong>Nama Usaha:</strong> {{ $surat->detailUsaha->nama_usaha }}</p>
                             <p><strong>Jenis Usaha:</strong> {{ $surat->detailUsaha->jenis_usaha }}</p>
@@ -70,56 +73,82 @@
                             <p><strong>Tanggal Meninggal:</strong> {{ $surat->detailKematian->tanggal_meninggal }}</p>
                             <p><strong>Sebab:</strong> {{ $surat->detailKematian->sebab_meninggal }}</p>
                             <p><strong>Pelapor:</strong> {{ $surat->detailKematian->nama_pelapor }}</p>
+
+                        <!-- [BARU] LOGIKA SURAT DOMISILI -->
+                        @elseif($surat->jenis_surat == 'surat_domisili' && $surat->detailDomisili)
+                            <div class="alert alert-info border-0 shadow-sm">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <small class="text-muted d-block">ALAMAT ASAL</small>
+                                        <strong>{{ $surat->detailDomisili->alamat_asal }}</strong>
+                                    </div>
+                                    <div class="col-md-2 text-center align-self-center">
+                                        <i class="fas fa-arrow-right fa-lg text-primary"></i>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <small class="text-muted d-block">ALAMAT TUJUAN</small>
+                                        <strong>{{ $surat->detailDomisili->alamat_tujuan }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <p><strong>Alasan Pindah:</strong> {{ $surat->detailDomisili->alasan_pindah }}</p>
+                            <p><strong>Jumlah Pengikut:</strong> {{ $surat->detailDomisili->jumlah_pengikut }} Orang</p>
+                        
                         @else
-                            <p class="text-danger">Data detail tidak ditemukan.</p>
+                            <div class="alert alert-danger d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>Data detail tidak ditemukan. Pastikan warga mengisi formulir dengan lengkap.</div>
+                            </div>
                         @endif
                         
                         @if($surat->keterangan)
                             <hr>
-                            <p class="mb-0"><strong>Catatan Warga:</strong> <br> <em>"{{ $surat->keterangan }}"</em></p>
+                            <p class="mb-0 small text-muted"><strong>Catatan Warga:</strong> <br> <em>"{{ $surat->keterangan }}"</em></p>
                         @endif
                     </div>
 
+                    <!-- AREA TOMBOL AKSI -->
                     @if($surat->status == 'menunggu')
-                    <hr class="my-4">
-                    <h6 class="fw-bold">Tindakan Admin:</h6>
-                    
-                    <form action="{{ route('admin.surat.update', $surat->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="mb-3">
-                            <label>Catatan Admin (Opsional)</label>
-                            <textarea name="pesan_admin" class="form-control" placeholder="Contoh: Silakan ambil surat hari Senin..."></textarea>
-                        </div>
+                    <div class="card bg-light border-0 p-3">
+                        <h6 class="fw-bold mb-3">Tindakan Admin:</h6>
+                        <form action="{{ route('admin.surat.update', $surat->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            
+                            <div class="mb-3">
+                                <textarea name="pesan_admin" class="form-control" rows="2" placeholder="Tulis catatan untuk warga (Opsional)..."></textarea>
+                            </div>
 
-                        <div class="d-flex gap-2">
-                            <button type="submit" name="status" value="selesai" class="btn btn-success w-50">
-                                <i class="fas fa-check-circle"></i> SETUJUI (ACC)
-                            </button>
-                            <button type="submit" name="status" value="ditolak" class="btn btn-danger w-50">
-                                <i class="fas fa-times-circle"></i> TOLAK
-                            </button>
-                        </div>
-                    </form>
+                            <div class="d-flex gap-2">
+                                <button type="submit" name="status" value="selesai" class="btn btn-success w-100 fw-bold shadow-sm">
+                                    <i class="fas fa-check-circle me-2"></i> SETUJUI (ACC)
+                                </button>
+                                <button type="submit" name="status" value="ditolak" class="btn btn-danger w-100 fw-bold shadow-sm">
+                                    <i class="fas fa-times-circle me-2"></i> TOLAK
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                     @endif
 
+                    <!-- TAMPILKAN HASIL JIKA SUDAH DIPROSES -->
                     @if($surat->status != 'menunggu')
-                        <div class="alert alert-{{ $surat->status == 'selesai' ? 'success' : 'danger' }} mt-4 text-center">
+                        <div class="alert alert-{{ $surat->status == 'selesai' ? 'success' : 'danger' }} mt-4 text-center shadow-sm border-0">
                             <strong>Surat ini telah {{ strtoupper($surat->status) }}</strong>
                             @if($surat->nomor_surat)
                                 <br>Nomor Surat: <strong>{{ $surat->nomor_surat }}</strong>
                             @endif
                         </div>
 
+                        <!-- TOMBOL CETAK PDF -->
                         @if($surat->status == 'selesai')
                             <div class="text-center mt-3">
-                                <a href="{{ route('admin.surat.cetak', $surat->id) }}" class="btn btn-warning btn-lg px-5 fw-bold" target="_blank">
+                                <a href="{{ route('admin.surat.cetak', $surat->id) }}" class="btn btn-warning btn-lg px-5 fw-bold shadow rounded-pill" target="_blank">
                                     <i class="fas fa-print me-2"></i> CETAK SURAT (PDF)
                                 </a>
                             </div>
                         @endif
-                        @endif
+                    @endif
 
                 </div>
             </div>

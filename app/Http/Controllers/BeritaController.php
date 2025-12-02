@@ -137,4 +137,16 @@ class BeritaController extends Controller
     // 4. Redirect kembali ke halaman index dengan pesan sukses
     return redirect()->route('berita.index')->with('success', 'Berita berhasil dihapus!');
     }
+    // Fungsi untuk Halaman Baca Berita (Publik)
+    public function baca($id)
+    {
+        // Cari berita, kalau tidak ada tampilkan 404
+        $berita = Berita::with('user')->findOrFail($id);
+
+        // Ambil berita lain untuk sidebar "Berita Terbaru"
+        $beritaLain = Berita::where('id', '!=', $id)->latest()->take(5)->get();
+
+        return view('berita.baca', compact('berita', 'beritaLain'));
+    }
+
 }
