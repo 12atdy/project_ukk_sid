@@ -12,7 +12,7 @@
     <div class="col-md-5">
         <div class="card shadow">
             <div class="card-body p-5">
-                <h3 class="text-center mb-4">Login Aparatur</h3>
+                <h3 class="text-center mb-4">Login</h3>
                 
                 @if ($errors->any())
                     <div class="alert alert-danger">
