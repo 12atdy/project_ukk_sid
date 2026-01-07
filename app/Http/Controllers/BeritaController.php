@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Berita;
+use App\Models\LogAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+
 
 class BeritaController extends Controller
 {
@@ -32,27 +34,32 @@ class BeritaController extends Controller
      */
     public function store(Request $request)
     {
-    // 1. Validasi input
-    $this->validate($request, [
-        'gambar' => 'required|image|mimes:jpeg,jpg,png|max:2048',
-        'judul'  => 'required|min:5',
-        'isi'    => 'required|min:10'
-    ]);
+        // 1. Validasi input
+        $this->validate($request, [
+            'gambar' => 'required|image|mimes:jpeg,jpg,png|max:2048',
+            'judul'  => 'required|min:5',
+            'isi'    => 'required|min:10'
+        ]);
 
-    // 2. Simpan gambar secara eksplisit ke disk 'public'
-    //    Ini akan menyimpannya di 'storage/app/public/berita'
-    $path = $request->file('gambar')->store('berita', 'public');
+        // 2. Simpan gambar secara eksplisit ke disk 'public'
+        //    Ini akan menyimpannya di 'storage/app/public/berita'
+        $path = $request->file('gambar')->store('berita', 'public');
 
-    // 3. Buat berita baru di database
-    Berita::create([
-        'gambar'  => basename($path), 
-        'judul'   => $request->judul,
-        'isi'     => $request->isi,
-        'user_id' => Auth::id()
-    ]);
+        // 3. Buat berita baru di database
+        Berita::create([
+            'gambar'  => basename($path), 
+            'judul'   => $request->judul,
+            'isi'     => $request->isi,
+            'user_id' => Auth::id()
+        ]);
 
-    // 4. Redirect dengan pesan sukses
-    return redirect()->route('berita.index')->with('success', 'Berita berhasil dipublikasikan!');
+        LogAktivitas::create([
+        'user_id' => Auth::id(),
+        'aktivitas' => 'Memposting berita baru: ' . $request->judul,
+        ]);
+
+        // 4. Redirect dengan pesan sukses
+        return redirect()->route('berita.index')->with('success', 'Berita berhasil dipublikasikan!');
     }
 
     /**
@@ -115,6 +122,11 @@ class BeritaController extends Controller
             ]);
         }
 
+        LogAktivitas::create([
+        'user_id' => Auth::id(),
+        'aktivitas' => 'Mengedit berita: ' . $request->judul,
+        ]);
+
         // 5. Redirect ke halaman index
         return redirect()->route('berita.index')->with('success', 'Berita berhasil diperbarui!');
     }
@@ -124,18 +136,23 @@ class BeritaController extends Controller
      */
     public function destroy(string $id)
     {
-    // 1. Cari data berita berdasarkan ID
-    $berita = Berita::findOrFail($id);
+        // 1. Cari data berita berdasarkan ID
+        $berita = Berita::findOrFail($id);
 
-    // 2. Hapus gambar lama dari folder storage
-    //    (storage/app/public/berita)
-    Storage::disk('public')->delete('berita/' . $berita->gambar);
+        // 2. Hapus gambar lama dari folder storage
+        //    (storage/app/public/berita)
+        Storage::disk('public')->delete('berita/' . $berita->gambar);
 
-    // 3. Hapus data berita dari database
-    $berita->delete();
+        // 3. Hapus data berita dari database
+        $berita->delete();
 
-    // 4. Redirect kembali ke halaman index dengan pesan sukses
-    return redirect()->route('berita.index')->with('success', 'Berita berhasil dihapus!');
+        LogAktivitas::create([
+        'user_id' => Auth::id(),
+        'aktivitas' => 'Menghapus berita: ' . $berita->judul,
+        ]);
+
+        // 4. Redirect kembali ke halaman index dengan pesan sukses
+        return redirect()->route('berita.index')->with('success', 'Berita berhasil dihapus!');
     }
     // Fungsi untuk Halaman Baca Berita (Publik)
     public function baca($id)

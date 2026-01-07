@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Pengaduan;
 use App\Models\TanggapanPengaduan;
+use App\Models\LogAktivitas;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class PengaduanController extends Controller
 {
@@ -57,6 +59,12 @@ class PengaduanController extends Controller
             'tanggal_lapor' => now(), 
         ]);
 
+        // REKAM AKTIVITAS
+        LogAktivitas::create([
+            'user_id' => Auth::id(),
+            'aktivitas' => 'Membuat laporan pengaduan baru: ' . $request->judul_laporan,
+        ]);
+
         return redirect()->route('pengaduan.index')->with('success', 'Laporan berhasil dikirim!');
     }
 
@@ -90,6 +98,12 @@ class PengaduanController extends Controller
 
         // Update status pengaduan jadi 'selesai'
         $pengaduan->update(['status' => 'selesai']);
+
+        // REKAM AKTIVITAS
+        LogAktivitas::create([
+            'user_id' => Auth::id(),
+            'aktivitas' => 'Menanggapi pengaduan: ' . $pengaduan->judul,
+        ]);
 
         return back()->with('success', 'Tanggapan berhasil dikirim!');
     }

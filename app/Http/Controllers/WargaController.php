@@ -5,23 +5,31 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SuratAjuan;
 use App\Models\Pengaduan;
-use App\Models\Biodata; // Jangan lupa import ini
+use App\Models\Biodata; 
 use Illuminate\Support\Facades\Auth;
+use App\Models\LogAktivitas;
 
 class WargaController extends Controller
 {
     public function index()
     {
-        // 1. Ambil Surat Terakhir
-        $suratTerakhir = SuratAjuan::where('user_id', Auth::id())->latest()->first();
+        // 1. Ambil 5 Surat Terakhir (Bukan cuma 1)
+        $riwayatSurat = SuratAjuan::where('user_id', Auth::id())
+                            ->latest()
+                            ->take(5)
+                            ->get();
 
-        // 2. Ambil Pengaduan Terakhir
-        $aduanTerakhir = Pengaduan::where('user_id', Auth::id())->latest()->first();
+        // 2. Ambil 3 Pengaduan Terakhir
+        $riwayatAduan = Pengaduan::where('user_id', Auth::id())
+                            ->latest()
+                            ->take(3)
+                            ->get();
 
-        // 3. Hitung total surat
+        // 3. Statistik Ringkas
         $totalSurat = SuratAjuan::where('user_id', Auth::id())->count();
+        $totalAduan = Pengaduan::where('user_id', Auth::id())->count();
 
-        return view('warga.dashboard', compact('suratTerakhir', 'aduanTerakhir', 'totalSurat'));
+        return view('warga.dashboard', compact('riwayatSurat', 'riwayatAduan', 'totalSurat', 'totalAduan'));
     }
 
     // [BARU] Halaman Edit Profil
@@ -63,6 +71,11 @@ class WargaController extends Controller
                 'alamat' => $request->alamat,
             ]
         );
+
+        LogAktivitas::create([
+        'user_id' => Auth::id(),
+        'aktivitas' => 'Memperbarui biodata profil diri',
+        ]);
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
     }

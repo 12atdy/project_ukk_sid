@@ -6,7 +6,7 @@
     <!-- HEADER -->
     <div class="text-center mb-5">
         <h2 class="fw-bold text-primary">Layanan Surat Menyurat</h2>
-        <p class="text-muted">Ajukan permohonan surat administrasi desa secara mandiri, cepat, dan mudah.</p>
+        <p class="text-muted">Ajukan permohonan surat administrasi desa secara mandiri.</p>
     </div>
 
     <div class="row justify-content-center">
@@ -56,12 +56,14 @@
                             </optgroup>
                         </select>
 
-                        <!-- INFO SYARAT (Hidden by default) -->
+                        <!-- INFO SYARAT (Perbaikan Kalimat) -->
                         <div id="info_syarat" class="alert alert-info border-0 d-none shadow-sm">
-                            <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i> Persyaratan Dokumen:</h6>
-                            <ul id="list_syarat" class="mb-0 small ps-3"></ul>
-                            <hr>
-                            <small class="fst-italic">*Harap bawa dokumen asli & fotocopy ke kantor desa saat pengambilan surat.</small>
+                            <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i> Dokumen yang Wajib Disiapkan:</h6>
+                            <ul id="list_syarat" class="mb-2 small ps-3"></ul>
+                            <hr class="my-2">
+                            <small class="fst-italic fw-bold text-primary">
+                                *CATATAN: Dokumen ASLI & Fotocopy wajib dibawa ke Balai Desa saat pengambilan surat untuk validasi akhir.
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -70,7 +72,7 @@
                 <div class="card border-0 shadow mb-4 rounded-3">
                     <div class="card-body p-4">
                         
-                        <!-- Placeholder (Jika belum pilih) -->
+                        <!-- Placeholder -->
                         <div id="form_placeholder" class="text-center py-5 text-muted">
                             <i class="fas fa-file-alt fa-3x mb-3 opacity-25"></i>
                             <p>Silakan pilih jenis surat di atas untuk mengisi formulir.</p>
@@ -182,7 +184,7 @@
                             </div>
                         </div>
 
-                        <!-- F. FORM DOMISILI (PINDAH) - BARU -->
+                        <!-- F. FORM DOMISILI (PINDAH) -->
                         <div id="form_surat_domisili" class="detail-form d-none">
                             <h5 class="fw-bold text-primary mb-4 border-bottom pb-2">Detail Kepindahan</h5>
                             <div class="row g-3">
@@ -210,18 +212,24 @@
                             </div>
                         </div>
 
-                        <!-- UPLOAD FOTO (WAJIB UNTUK SEMUA) -->
-                        <div class="alert alert-warning border-0 shadow-sm mt-4 mb-4">
-                            <h6 class="fw-bold text-dark"><i class="fas fa-camera me-2"></i> Bukti Lampiran (Wajib)</h6>
-                            <p class="small mb-2">Silakan upload foto KTP / KK / Surat Pengantar RT/RW sebagai syarat verifikasi.</p>
-                            <input type="file" name="foto_lampiran" class="form-control" accept="image/*" required>
-                            <small class="text-muted">*Format: JPG/PNG, Maks: 2MB</small>
+                        <!-- UPLOAD FOTO (INSTRUKSI DIPERJELAS) -->
+                        <div class="alert alert-warning border-0 shadow-sm mt-4 mb-4 d-flex">
+                            <div class="me-3"><i class="fas fa-camera fa-2x text-warning"></i></div>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Upload Dokumen Pendukung (Wajib)</h6>
+                                <p class="small mb-2 lh-sm">
+                                    Untuk verifikasi awal, silakan upload foto <strong>Surat Pengantar RT/RW</strong>. 
+                                    <br>Jika belum ada, boleh upload foto <strong>KTP</strong> anda.
+                                </p>
+                                <input type="file" name="foto_lampiran" class="form-control form-control-sm" accept="image/*" required>
+                                <small class="text-muted" style="font-size: 0.75rem">*Format: JPG/PNG, Maks: 2MB. Cukup 1 foto saja.</small>
+                            </div>
                         </div>
 
-                        <!-- CATATAN TAMBAHAN (Selalu Muncul) -->
+                        <!-- CATATAN TAMBAHAN -->
                         <div class="mt-3">
                             <label class="form-label fw-bold">Catatan Tambahan (Opsional)</label>
-                            <textarea name="keterangan" class="form-control bg-light" rows="2" placeholder="Contoh: Saya butuh surat ini secepatnya..."></textarea>
+                            <textarea name="keterangan" class="form-control bg-light" rows="2" placeholder="Contoh: Mohon diproses secepatnya pak..."></textarea>
                         </div>
 
                         <div class="d-grid mt-4">
@@ -241,12 +249,12 @@
 <script>
     // Data Syarat
     const dataSyarat = {
-        "surat_usaha": ["KTP & KK Asli", "Bukti Lunas PBB Tahun Terakhir", "Foto Tempat Usaha"],
-        "surat_nikah": ["KTP & KK Calon Suami Istri", "Ijazah Terakhir", "Akta Kelahiran", "Foto 2x3 & 3x4 (Background Biru)"],
-        "surat_tanah": ["Fotocopy KTP & KK", "Letter C / Sertifikat Asli", "Bukti Pembayaran PBB"],
-        "surat_kelahiran": ["KTP Ayah & Ibu", "KK", "Buku Nikah / Akta Nikah", "Surat Keterangan Lahir dari Bidan/RS"],
-        "surat_kematian": ["KTP Almarhum", "KK Asli", "KTP Pelapor"],
-        "surat_domisili": ["KTP & KK Asli", "Pas Foto 4x6 (3 Lembar)", "Alamat Tujuan Lengkap"]
+        "surat_usaha": ["Surat Pengantar RT/RW", "KTP Asli", "Foto Tempat Usaha (Jika Ada)"],
+        "surat_nikah": ["Surat Pengantar RT/RW", "KTP & KK Calon Suami Istri", "Ijazah Terakhir", "Akta Kelahiran", "Foto 2x3 & 3x4"],
+        "surat_tanah": ["Surat Pengantar RT/RW", "Fotocopy KTP & KK", "Letter C / Sertifikat Asli", "Bukti PBB"],
+        "surat_kelahiran": ["Surat Pengantar RT/RW", "KTP Ayah & Ibu", "KK", "Buku Nikah", "Surat Lahir Bidan/RS"],
+        "surat_kematian": ["Surat Pengantar RT/RW", "KTP Almarhum", "KK Asli"],
+        "surat_domisili": ["Surat Pengantar RT/RW", "KTP & KK Asli", "Alamat Tujuan Lengkap"]
     };
 
     function aturFormulir() {
@@ -270,16 +278,14 @@
         }
 
         // 2. ATUR FORM
-        // Sembunyikan semua, munculkan placeholder
         document.querySelectorAll('.detail-form').forEach(el => el.classList.add('d-none'));
         placeholder.classList.remove('d-none');
 
-        // Jika ada pilihan valid
         var formId = "form_" + jenis;
         var formEl = document.getElementById(formId);
         if(formEl) {
-            placeholder.classList.add('d-none'); // Sembunyikan placeholder
-            formEl.classList.remove("d-none");   // Munculkan form terpilih
+            placeholder.classList.add('d-none');
+            formEl.classList.remove("d-none");
         }
     }
 </script>
