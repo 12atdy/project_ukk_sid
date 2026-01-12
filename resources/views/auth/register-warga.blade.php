@@ -14,15 +14,30 @@
             <div class="card-body p-5">
                 <h3 class="text-center mb-4">Registrasi Warga</h3>
 
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form action="{{ route('warga.register.post') }}" method="POST">
                     @csrf
+                    
+                    <div class="mb-3">
+                        <label for="nik" class="form-label">NIK (16 Digit)</label>
+                        <input type="number" name="nik" id="nik" class="form-control" value="{{ old('nik') }}" required>
+                    </div>
                     <div class="mb-3">
                         <label for="name" class="form-label">Nama</label>
-                        <input type="text" name="name" id="name" class="form-control" required>
+                        <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" name="email" id="email" class="form-control" required>
+                        <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>

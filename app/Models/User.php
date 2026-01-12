@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,7 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // <--- PENTING: Jangan dihapus biar status Admin/Warga tersimpan
+        'role', // <--- JANGAN DIHAPUS! Ini kunci supaya user punya status.
     ];
 
     /**
@@ -45,9 +46,6 @@ class User extends Authenticatable
         ];
     }
 
-    // --- RELASI KE TABEL LAIN ---
-
-    // Relasi ke Biodata (One to One)
     public function biodata()
     {
         return $this->hasOne(Biodata::class, 'user_id');

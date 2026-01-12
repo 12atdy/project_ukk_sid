@@ -8,21 +8,13 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Biodata;
 use Illuminate\Support\Facades\Hash;
-use App\Models\LogAktivitas; // Jangan lupa ini untuk log logout
+use App\Models\LogAktivitas;
 
 class AuthController extends Controller
 {
     // Tampilkan Form Login
     public function showLoginForm()
     {
-        // Cek jika sudah login, langsung lempar ke dashboard masing-masing
-        if (Auth::check()) {
-            if (Auth::user()->role == 'admin') {
-                return redirect()->route('dashboard');
-            } elseif (Auth::user()->role == 'warga') {
-                return redirect()->route('warga.dashboard');
-            }
-        }
         return view('auth.login');
     }
 
@@ -37,19 +29,33 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // REKAM LOG LOGIN (Hanya jika belum terekam di middleware lain)
-            // Cek dulu biar gak double kalau user refresh
-            LogAktivitas::create([
-                'user_id' => Auth::id(),
-                'aktivitas' => 'Melakukan Login ke dalam sistem',
-            ]);
+            // [PERBAIKAN LOGIKA]
+            // Cek dulu apakah user punya role
+            $role = Auth::user()->role;
 
-            // Cek Role dan Redirect EKSPLISIT (Pasti)
-            // Jangan pakai 'intended' dulu biar tidak bingung
-            if (Auth::user()->role == 'admin') {
-                return redirect()->route('dashboard');
-            } elseif (Auth::user()->role == 'warga') {
-                return redirect()->route('warga.dashboard');
+            if ($role == 'admin') {
+                // Rekam Log
+                LogAktivitas::create([
+                    'user_id' => Auth::id(),
+                    'aktivitas' => 'Melakukan Login sebagai Admin',
+                ]);
+                return redirect()->intended('dashboard');
+
+            } elseif ($role == 'warga') {
+                // Rekam Log
+                LogAktivitas::create([
+                    'user_id' => Auth::id(),
+                    'aktivitas' => 'Melakukan Login sebagai Warga',
+                ]);
+                return redirect()->intended('portal-warga');
+
+            } else {
+                // [PENTING] Jika Role Kosong/Salah, Tendang Keluar!
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                
+                return back()->with('error', 'Akun bermasalah (Role tidak ditemukan). Silakan daftar ulang atau hubungi Admin.');
             }
         }
 
@@ -59,9 +65,6 @@ class AuthController extends Controller
     // Tampilkan Form Register Warga
     public function showWargaRegisterForm()
     {
-        if (Auth::check()) {
-            return redirect()->route('warga.dashboard');
-        }
         return view('auth.register-warga');
     }
 
@@ -76,39 +79,34 @@ class AuthController extends Controller
         ]);
 
         // 1. Buat User Baru
+        // Pastikan file app/Models/User.php sudah ada 'role' di $fillable
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'warga',
+            'role' => 'warga', 
         ]);
 
         // 2. Buat Biodata Awal
         Biodata::create([
             'user_id' => $user->id,
             'nik' => $request->nik,
-            'nama_lengkap' => $request->name, 
-            // Kolom lain biarkan null/default
+            'nama_lengkap' => $request->name,
         ]);
 
-        // 3. Login Otomatis
-        Auth::login($user);
-        $request->session()->regenerate(); // Penting untuk keamanan session baru
-
-        // REKAM LOG REGISTER
+        // 3. Rekam Log (Manual ID karena belum login)
         LogAktivitas::create([
             'user_id' => $user->id,
             'aktivitas' => 'Mendaftar akun warga baru',
         ]);
 
-        // 4. Redirect Pasti ke Dashboard Warga
-        return redirect()->route('warga.dashboard')->with('success', 'Pendaftaran berhasil! Selamat datang.');
+        // 4. Arahkan ke Halaman Login dengan Pesan Sukses
+        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Silakan login dengan akun baru anda.');
     }
 
     // Proses Logout
     public function logout(Request $request)
     {
-        // Rekam log sebelum session hancur
         if(Auth::check()){
             LogAktivitas::create([
                 'user_id' => Auth::id(),
@@ -120,7 +118,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirect ke Landing Page (Halaman Utama)
-        return redirect('/'); 
+        return redirect('/');
     }
 }

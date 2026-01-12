@@ -9,12 +9,16 @@ class LogAktivitas extends Model
 {
     use HasFactory;
 
-    protected $table = 'log_aktivitas'; // Sesuai nama tabel di migrasi
-    protected $guarded = ['id'];
+    protected $table = 'log_aktivitas'; // Sesuaikan dengan nama tabel di migration
 
-    // Relasi: Siapa pelakunya?
+    // [PENTING] Daftarkan kolom ini
+    protected $fillable = [
+        'user_id',
+        'aktivitas',
+    ];
+
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 }
