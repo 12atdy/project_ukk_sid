@@ -2,17 +2,19 @@
 
 @section('content')
 <div class="container-fluid">
-    
+
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800 fw-bold"><i class="fas fa-newspaper me-2"></i> Manajemen Berita</h1>
-        <a href="{{ route('berita.create') }}" class="btn btn-primary btn-sm shadow-sm rounded-pill px-3">
+        
+        {{-- PERBAIKAN: Gunakan 'admin.berita.create' --}}
+        <a href="{{ route('admin.berita.create') }}" class="btn btn-primary btn-sm shadow-sm rounded-pill px-3">
             <i class="fas fa-plus fa-sm text-white-50 me-1"></i> Tulis Berita Baru
         </a>
     </div>
 
     <div class="card border-0 shadow rounded-3">
         <div class="card-body">
-            
+
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
@@ -33,36 +35,41 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($semuaBerita as $index => $berita)
+                        @forelse($semuaBerita as $berita)
                         <tr>
-                            <td class="fw-bold text-center">{{ $semuaBerita->firstItem() + $index }}</td>
+                            <td>{{ $loop->iteration }}</td>
                             <td>
-                                <img src="{{ asset('storage/berita/' . $berita->gambar) }}" 
-                                     class="img-fluid rounded shadow-sm" 
-                                     style="width: 80px; height: 60px; object-fit: cover;">
+                                @if($berita->gambar)
+                                    <img src="{{ asset('storage/' . $berita->gambar) }}" class="img-thumbnail rounded" style="width: 80px; height: 60px; object-fit: cover;">
+                                @else
+                                    <span class="badge bg-secondary">No Image</span>
+                                @endif
                             </td>
                             <td>
-                                <h6 class="fw-bold mb-1 text-dark">{{ Str::limit($berita->judul, 50) }}</h6>
-                                <p class="small text-muted mb-0">{{ Str::limit($berita->isi, 60) }}</p>
+                                <h6 class="mb-1 fw-bold text-dark">{{ $berita->judul }}</h6>
+                                <p class="text-muted small mb-0">{{ Str::limit(strip_tags($berita->isi), 80) }}</p>
                             </td>
                             <td>
-                                <span class="badge bg-secondary fw-normal">
-                                    <i class="fas fa-user-edit me-1"></i> {{ $berita->user->name }}
+                                <span class="badge bg-info text-dark bg-opacity-10 text-primary px-2 py-1 rounded-pill">
+                                    <i class="fas fa-user-circle me-1"></i> {{ $berita->penulis->name }}
                                 </span>
                             </td>
-                            <td class="small">
-                                <i class="far fa-calendar-alt me-1"></i> {{ $berita->created_at->format('d M Y') }} <br>
-                                <span class="text-muted">{{ $berita->created_at->format('H:i') }} WIB</span>
+                            <td class="small text-secondary">
+                                <i class="far fa-calendar-alt me-1"></i> {{ $berita->created_at->format('d M Y') }}<br>
+                                <i class="far fa-clock me-1"></i> {{ $berita->created_at->format('H:i') }}
                             </td>
                             <td class="text-center">
                                 <div class="btn-group" role="group">
-                                    <a href="{{ route('berita.edit', $berita->id) }}" class="btn btn-sm btn-outline-info" title="Edit">
-                                        <i class="fas fa-pen"></i>
+                                    {{-- PERBAIKAN: Gunakan 'admin.berita.edit' --}}
+                                    <a href="{{ route('admin.berita.edit', $berita->id) }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                        <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('berita.destroy', $berita->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus berita ini?');">
+
+                                    {{-- PERBAIKAN: Gunakan 'admin.berita.destroy' --}}
+                                    <form action="{{ route('admin.berita.destroy', $berita->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus berita ini?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                        <button type="button" onclick="if(confirm('Yakin hapus?')) this.form.submit()" class="btn btn-sm btn-outline-danger" title="Hapus">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -72,20 +79,21 @@
                         @empty
                         <tr>
                             <td colspan="6" class="text-center py-5 text-muted">
-                                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="80" class="mb-3 opacity-25">
-                                <p class="mb-0">Belum ada berita yang dipublikasikan.</p>
+                                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="60" class="mb-3 opacity-50">
+                                <p class="mb-0">Belum ada berita yang diterbitkan.</p>
                             </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            
-            <div class="mt-3 d-flex justify-content-end">
+
+            <div class="d-flex justify-content-end mt-3">
                 {{ $semuaBerita->links() }}
             </div>
 
         </div>
     </div>
+
 </div>
 @endsection

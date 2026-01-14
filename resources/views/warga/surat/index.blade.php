@@ -1,92 +1,112 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-primary m-0"><i class="fas fa-history me-2"></i> Riwayat Pengajuan Surat</h4>
-        <a href="{{ route('surat.create') }}" class="btn btn-success shadow-sm">
-            <i class="fas fa-plus me-1"></i> Ajukan Baru
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800 fw-bold"><i class="fas fa-history me-2"></i> Riwayat Pengajuan Surat</h1>
+        <a href="{{ route('surat.create') }}" class="btn btn-primary shadow-sm rounded-pill">
+            <i class="fas fa-plus fa-sm text-white-50 me-1"></i> Buat Pengajuan Baru
         </a>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success border-0 shadow-sm rounded-3 mb-4">
-            <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
-    <div class="row">
-        @forelse($suratSaya as $surat)
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card border-0 shadow-sm h-100 rounded-3 border-start border-4 
-                {{ $surat->status == 'menunggu' ? 'border-warning' : ($surat->status == 'selesai' ? 'border-success' : 'border-danger') }}">
-                
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <small class="text-muted fw-bold">
-                            <i class="far fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($surat->tanggal_ajuan)->format('d M Y') }}
-                        </small>
-                        
-                        @if($surat->status == 'menunggu')
-                            <span class="badge bg-warning text-dark rounded-pill">Proses</span>
-                        @elseif($surat->status == 'selesai')
-                            <span class="badge bg-success rounded-pill">Selesai</span>
-                        @else
-                            <span class="badge bg-danger rounded-pill">Ditolak</span>
-                        @endif
-                    </div>
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-1"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
-                    <h5 class="card-title fw-bold text-dark mb-1">
-                        {{ strtoupper(str_replace('_', ' ', $surat->jenis_surat)) }}
-                    </h5>
-                    
-                    @if($surat->nomor_surat)
-                    <p class="small text-muted mb-2"><i class="fas fa-barcode me-1"></i> No: {{ $surat->nomor_surat }}</p>
-                    @else
-                    <p class="small text-muted mb-2 fst-italic">Nomor belum diterbitkan</p>
-                    @endif
+    <div class="card shadow mb-4 border-0 rounded-3">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-primary">Daftar Surat Saya</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" width="100%" cellspacing="0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th width="5%">No</th>
+                            <th>Jenis Surat</th>
+                            <th>Tanggal Ajuan</th>
+                            <th>Status</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($suratSaya as $surat)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>
+                                <span class="fw-bold text-dark">
+                                    {{ ucwords(str_replace('_', ' ', $surat->jenis_surat)) }}
+                                </span>
+                                <br>
+                                <small class="text-muted">{{ Str::limit($surat->keterangan, 50) }}</small>
+                            </td>
+                            <td>{{ \Carbon\Carbon::parse($surat->tanggal_ajuan)->format('d M Y') }}</td>
+                            <td>
+                                @if($surat->status == 'menunggu')
+                                    <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i> Menunggu Verifikasi</span>
+                                @elseif($surat->status == 'selesai')
+                                    <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Selesai / Disetujui</span>
+                                @elseif($surat->status == 'ditolak')
+                                    <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i> Ditolak</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+    
+                                {{-- LOGIKA: Cek Status Dulu --}}
+                                
+                                @if($surat->status == 'selesai')
+                                    
+                                    {{-- KONDISI 1: Surat SUDAH SELESAI (Disetujui Admin) --}}
+                                    {{-- Tombol Warna HIJAU, Bisa Diklik, Arah ke Route Cetak --}}
+                                    <a href="{{ route('surat.cetak_mandiri', $surat->id) }}" target="_blank" class="btn btn-sm btn-success shadow-sm rounded-pill px-3" title="Cetak Surat">
+                                        <i class="fas fa-print me-1"></i> Cetak PDF
+                                    </a>
 
-                    @if($surat->keterangan)
-                        <div class="bg-light p-2 rounded small mb-3 text-secondary">
-                            <i class="fas fa-comment-alt me-1"></i> "{{ Str::limit($surat->keterangan, 50) }}"
-                        </div>
-                    @endif
-                </div>
+                                @elseif($surat->status == 'ditolak')
+                                    
+                                    {{-- KONDISI 2: Surat DITOLAK --}}
+                                    {{-- Tombol MERAH, Disabled (Gak bisa diklik) --}}
+                                    <button type="button" class="btn btn-sm btn-danger rounded-pill" disabled title="Pengajuan Ditolak">
+                                        <i class="fas fa-times-circle"></i> Ditolak
+                                    </button>
 
-                <div class="card-footer bg-white border-0 pt-0 pb-3">
-                    @if($surat->status == 'selesai')
-                        <div class="d-grid">
-                            <button class="btn btn-outline-success btn-sm" disabled>
-                                <i class="fas fa-check"></i> Surat Siap Diambil / Dicetak
-                            </button>
-                        </div>
-                    @elseif($surat->status == 'ditolak')
-                        <div class="d-grid">
-                            <button class="btn btn-outline-danger btn-sm" disabled>
-                                <i class="fas fa-times"></i> Perbaiki Data
-                            </button>
-                        </div>
-                    @else
-                        <div class="d-grid">
-                            <button class="btn btn-outline-warning text-dark btn-sm" disabled>
-                                <i class="fas fa-clock"></i> Menunggu Verifikasi
-                            </button>
-                        </div>
-                    @endif
-                </div>
+                                @else
+                                    
+                                    {{-- KONDISI 3: Masih MENUNGGU --}}
+                                    {{-- Tombol ABU-ABU/KUNING, Disabled (Gak bisa diklik) --}}
+                                    <button type="button" class="btn btn-sm btn-secondary rounded-pill" disabled title="Menunggu Verifikasi">
+                                        <i class="fas fa-hourglass-half"></i> Proses...
+                                    </button>
+                                    
+                                @endif
+
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="80" class="mb-3 opacity-50">
+                                <p class="text-muted mb-0">Anda belum pernah mengajukan surat.</p>
+                                <a href="{{ route('surat.create') }}" class="btn btn-link text-decoration-none">Ajukan Sekarang</a>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-        @empty
-        <div class="col-12">
-            <div class="text-center py-5 bg-white rounded-3 shadow-sm">
-                <img src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png" width="100" class="mb-3 opacity-50">
-                <h5 class="text-muted fw-bold">Belum ada riwayat surat.</h5>
-                <p class="text-muted small">Mulai ajukan surat pertama anda sekarang.</p>
-                <a href="{{ route('surat.create') }}" class="btn btn-primary mt-2">Buat Pengajuan</a>
-            </div>
-        </div>
-        @endforelse
     </div>
+
 </div>
 @endsection

@@ -5,19 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desa Sidokerto - Pelayanan Digital</title>
     
-    <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
         
-        /* NAVBAR TRANSPARAN */
-        .navbar { transition: all 0.3s; padding: 1rem 0; }
-        .navbar-scrolled { background-color: white; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 0.5rem 0; }
+        /* NAVBAR FIX */
+        .navbar { 
+            transition: all 0.3s ease-in-out; 
+            padding: 1rem 0; 
+            z-index: 9999; /* Wajib tinggi biar selalu di atas */
+        }
+        
+        /* State Navbar Saat Discroll (Background Putih Kaca) */
+        .navbar-scrolled { 
+            background-color: rgba(255, 255, 255, 0.95) !important; 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
+            padding: 0.8rem 0; 
+        }
+
         .navbar-brand { font-weight: 800; letter-spacing: -0.5px; font-size: 1.5rem; }
         
         /* HERO SECTION */
@@ -34,7 +44,7 @@
             clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
         }
 
-        /* SERVICES CARD (BISA DIKLIK) */
+        /* SERVICES CARD */
         .service-link { text-decoration: none; color: inherit; display: block; height: 100%; }
         .service-card {
             border: none;
@@ -43,12 +53,12 @@
             background: white;
             padding: 2rem;
             height: 100%;
-            cursor: pointer; /* Menandakan bisa diklik */
+            cursor: pointer;
         }
         .service-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            background-color: #f8fcff; /* Sedikit biru saat dihover */
+            background-color: #f8fcff;
         }
         .icon-box {
             width: 80px; height: 80px;
@@ -57,9 +67,7 @@
             font-size: 2rem; margin-bottom: 1.5rem;
             transition: 0.3s;
         }
-        .service-card:hover .icon-box {
-            transform: scale(1.1); /* Icon membesar dikit pas hover */
-        }
+        .service-card:hover .icon-box { transform: scale(1.1); }
 
         /* BERITA CARD */
         .card-berita {
@@ -77,27 +85,32 @@
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark" id="mainNav">
         <div class="container">
             <a class="navbar-brand" href="#"><i class="fas fa-leaf me-2"></i> SIDOKERTO</a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            
+            <button class="navbar-toggler border-0 bg-primary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center gap-lg-3">
                     <li class="nav-item"><a class="nav-link active" href="#">Beranda</a></li>
                     <li class="nav-item"><a class="nav-link" href="#layanan">Layanan</a></li>
                     <li class="nav-item"><a class="nav-link" href="#berita">Berita</a></li>
+                    
                     <li class="nav-item ms-lg-2">
                         @auth
                             @if(Auth::user()->role == 'admin')
-                                <a href="{{ route('dashboard') }}" class="btn btn-light text-primary fw-bold rounded-pill px-4 shadow-sm">Dashboard Admin</a>
+                                <a href="{{ route('dashboard') }}" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm text-white">Dashboard Admin</a>
                             @else
-                                <a href="{{ route('warga.dashboard') }}" class="btn btn-light text-primary fw-bold rounded-pill px-4 shadow-sm">Dashboard Warga</a>
+                                <a href="{{ route('warga.dashboard') }}" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm text-white">Dashboard Warga</a>
                             @endif
                         @else
-                            <a href="{{ route('login') }}" class="btn btn-outline-light rounded-pill px-4 me-2">Masuk</a>
+                            {{-- PERBAIKAN: Gunakan btn-primary (Warna Solid) agar terlihat saat background putih --}}
+                            <a href="{{ route('login') }}" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm text-white">
+                                <i class="fas fa-sign-in-alt me-2"></i> Masuk / Daftar
+                            </a>
                         @endauth
                     </li>
                 </ul>
@@ -105,7 +118,6 @@
         </div>
     </nav>
 
-    <!-- HERO HEADER -->
     <header class="hero-section">
         <div class="container">
             <div class="row align-items-center">
@@ -130,12 +142,10 @@
         </div>
     </header>
 
-    <!-- LAYANAN KAMI (Card Bisa Diklik) -->
     <section id="layanan" class="py-5" style="margin-top: -50px;">
         <div class="container">
             <div class="row justify-content-center g-4">
                 
-                <!-- Card 1: Surat Online (Link ke Dashboard/Login) -->
                 <div class="col-md-4">
                     <a href="{{ Auth::check() ? route('surat.index') : route('login') }}" class="service-link">
                         <div class="service-card shadow">
@@ -149,7 +159,6 @@
                     </a>
                 </div>
 
-                <!-- Card 2: Layanan Pengaduan (Link ke Pengaduan) -->
                 <div class="col-md-4">
                     <a href="{{ Auth::check() ? route('pengaduan.index') : route('login') }}" class="service-link">
                         <div class="service-card shadow">
@@ -163,7 +172,6 @@
                     </a>
                 </div>
 
-                <!-- Card 3: Berita Desa (Link Scroll ke Bawah) -->
                 <div class="col-md-4">
                     <a href="#berita" class="service-link">
                         <div class="service-card shadow">
@@ -181,7 +189,6 @@
         </div>
     </section>
 
-    <!-- BERITA TERKINI -->
     <section id="berita" class="py-5">
         <div class="container py-5">
             <div class="text-center mb-5">
@@ -194,14 +201,20 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="card card-berita shadow-sm h-100">
                         <div class="position-relative">
-                            <img src="{{ asset('storage/berita/' . $item->gambar) }}" class="card-img-top" alt="Berita">
+                            @if($item->gambar)
+                                <img src="{{ asset('storage/' . $item->gambar) }}" class="card-img-top" alt="Berita">
+                            @else
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-image fa-3x text-secondary opacity-25"></i>
+                                </div>
+                            @endif
                             <span class="berita-date shadow-sm">{{ $item->created_at->format('d M Y') }}</span>
                         </div>
                         <div class="card-body p-4">
                             <h5 class="card-title fw-bold mb-3">
                                 <a href="{{ route('berita.baca', $item->id) }}" class="text-dark text-decoration-none stretched-link">{{ Str::limit($item->judul, 50) }}</a>
                             </h5>
-                            <p class="card-text text-muted small">{{ Str::limit($item->isi, 100) }}</p>
+                            <p class="card-text text-muted small">{{ Str::limit(strip_tags($item->isi), 100) }}</p>
                         </div>
                         <div class="card-footer bg-white border-0 px-4 pb-4 pt-0">
                             <small class="text-primary fw-bold">Baca Selengkapnya <i class="fas fa-arrow-right ms-1"></i></small>
@@ -220,12 +233,10 @@
         </div>
     </section>
 
-    <!-- SAMBUTAN KADES -->
     <section class="py-5 bg-white border-top">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-5 mb-4 mb-lg-0 text-center">
-                    <!-- Placeholder Foto Kades -->
                     <div class="bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center shadow" style="width: 300px; height: 300px; overflow: hidden; border: 5px solid white;">
                         <i class="fas fa-user-tie fa-8x text-secondary opacity-25"></i>
                     </div>
@@ -237,16 +248,11 @@
                     </p>
                     <h5 class="fw-bold mt-4">Bpk. Kepala Desa</h5>
                     <small class="text-muted">Kepala Desa Sidokerto Periode 2024-2029</small>
-                    
-                    <div class="mt-4">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Logo_of_the_Ministry_of_Home_Affairs_of_the_Republic_of_Indonesia.svg/600px-Logo_of_the_Ministry_of_Home_Affairs_of_the_Republic_of_Indonesia.svg.png" height="40" class="me-3 opacity-50">
-                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="bg-dark text-white pt-5 pb-3">
         <div class="container">
             <div class="row g-4 mb-4">
@@ -284,19 +290,21 @@
         </div>
     </footer>
 
-    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const navbar = document.getElementById('mainNav');
+        
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
+                // Saat discroll ke bawah: Background Putih, Teks Gelap
                 navbar.classList.add('navbar-scrolled');
-                navbar.classList.add('navbar-light');
-                navbar.classList.remove('navbar-dark');
+                navbar.classList.add('navbar-light'); // Teks jadi gelap
+                navbar.classList.remove('navbar-dark'); // Hapus mode teks terang
             } else {
+                // Saat di atas (Hero): Background Transparan, Teks Terang
                 navbar.classList.remove('navbar-scrolled');
                 navbar.classList.remove('navbar-light');
-                navbar.classList.add('navbar-dark');
+                navbar.classList.add('navbar-dark'); // Teks jadi putih
             }
         });
     </script>

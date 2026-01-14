@@ -5,31 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Informasi Desa Sidokerto</title>
     
-    <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Google Fonts (Inter) supaya font lebih cantik -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
         body { 
-            background-color: #f3f4f6; /* Abu-abu muda yang lembut */
+            background-color: #f3f4f6; 
             font-family: 'Inter', sans-serif;
         }
 
-        /* --- GAYA NAVBAR MENGAMBANG (FLOATING) --- */
+        /* --- GAYA NAVBAR MENGAMBANG --- */
         .navbar-floating {
-            top: 15px;           /* Jarak dari atas */
-            left: 15px;          /* Jarak dari kiri */
-            right: 15px;         /* Jarak dari kanan */
-            width: auto;         /* Lebar menyesuaikan margin */
-            border-radius: 16px; /* Sudut membulat */
-            background: rgba(255, 255, 255, 0.95); /* Putih agak transparan */
-            backdrop-filter: blur(10px); /* Efek kaca buram di belakangnya */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Bayangan lembut */
+            top: 15px; 
+            left: 15px; 
+            right: 15px; 
+            width: auto; 
+            border-radius: 16px; 
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             padding: 0.8rem 1.5rem;
-            z-index: 1040; /* Di atas sidebar */
+            z-index: 1040; 
         }
 
         /* --- GAYA SIDEBAR --- */
@@ -38,8 +36,8 @@
             top: 0;
             bottom: 0;
             left: 0;
-            z-index: 100; /* Di bawah navbar */
-            padding: 100px 0 0; /* Turunkan isi sidebar biar gak ketutupan navbar */
+            z-index: 100; 
+            padding: 100px 0 0; 
             box-shadow: inset -1px 0 0 rgba(0, 0, 0, .05);
             background-color: #ffffff;
             transition: all 0.3s;
@@ -57,7 +55,7 @@
         /* Menu Link Styling */
         .nav-link {
             font-weight: 500;
-            color: #64748b; /* Abu-abu teks */
+            color: #64748b; 
             padding: 10px 20px;
             margin: 2px 15px;
             border-radius: 10px;
@@ -84,21 +82,21 @@
             color: #94a3b8;
         }
 
-        /* --- ADJUSTMENT KONTEN UTAMA --- */
+        /* --- CONTENT ADJUSTMENT --- */
         .main-content {
-            margin-left: 240px; /* Sesuaikan lebar sidebar */
-            padding-top: 110px; /* Turunkan konten biar gak ketutupan navbar */
+            margin-left: 240px; 
+            padding-top: 110px; 
             padding-right: 15px;
             padding-left: 15px;
             transition: all 0.3s;
         }
 
-        /* --- RESPONSIVE (HP) --- */
+        /* --- RESPONSIVE --- */
         @media (max-width: 767.98px) {
             .sidebar {
-                top: 85px; /* Di HP, sidebar muncul di bawah navbar */
+                top: 85px; 
                 padding-top: 0;
-                z-index: 1050; /* Di HP, sidebar harus di atas konten */
+                z-index: 1050; 
             }
             .main-content { margin-left: 0; padding-top: 120px; }
             .navbar-floating { left: 10px; right: 10px; top: 10px; }
@@ -107,22 +105,18 @@
 </head>
 <body>
 
-<!-- NAVBAR MENGAMBANG -->
 <nav class="navbar navbar-expand-md navbar-light fixed-top navbar-floating">
     <div class="container-fluid px-0">
         
-        <!-- Tombol Toggle Sidebar (HP) -->
         <button class="navbar-toggler border-0 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Brand / Logo -->
         <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="#">
             <i class="fas fa-landmark fa-lg me-2"></i>
             <span>SIDOKERTO<span class="text-dark">APP</span></span>
         </a>
 
-        <!-- Menu Kanan (User Profile) -->
         <ul class="navbar-nav ms-auto align-items-center">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-dark fw-bold d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -151,46 +145,55 @@
 <div class="container-fluid">
     <div class="row">
         
-        <!-- SIDEBAR -->
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
             <div class="sidebar-sticky">
                 <ul class="nav flex-column">
                     
-                    <!-- MENU ADMIN -->
                     @if(Auth::user()->role == 'admin')
                         <h6 class="sidebar-heading px-3 mt-2 mb-2">Administrator</h6>
+                        
                         <li class="nav-item">
-                            <a class="nav-link {{ Request::routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                            <a class="nav-link {{ Request::routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
                                 <i class="fas fa-tachometer-alt fa-fw me-2"></i> Dashboard
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link {{ Request::routeIs('biodata.*') ? 'active' : '' }}" href="{{ route('biodata.index') }}">
+                            <a class="nav-link {{ Request::routeIs('admin.biodata.*') ? 'active' : '' }}" href="{{ route('admin.biodata.index') }}">
                                 <i class="fas fa-users fa-fw me-2"></i> Data Penduduk
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link {{ Request::routeIs('berita.*') ? 'active' : '' }}" href="{{ route('berita.index') }}">
+                            <a class="nav-link {{ Request::routeIs('admin.berita.*') ? 'active' : '' }}" href="{{ route('admin.berita.index') }}">
                                 <i class="fas fa-newspaper fa-fw me-2"></i> Berita Desa
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.surat.*') ? 'active' : '' }}" href="{{ route('admin.surat.index') }}">
                                 <i class="fas fa-envelope-open-text fa-fw me-2"></i> Surat Masuk
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.pengaduan.*') ? 'active' : '' }}" href="{{ route('admin.pengaduan.index') }}">
                                 <i class="fas fa-bullhorn fa-fw me-2"></i> Pengaduan
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('admin.log.index') }}">
+                            <a class="nav-link {{ Request::routeIs('admin.keuangan.*') ? 'active' : '' }}" href="{{ route('admin.keuangan.index') }}">
+                                <i class="fas fa-money-bill-wave fa-fw me-2"></i> Keuangan Desa
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('admin.log.*') ? 'active' : '' }}" href="{{ route('admin.log.index') }}">
                                 <i class="fas fa-history fa-fw me-2"></i> Log Aktivitas
                             </a>
                         </li>
 
-                    <!-- MENU WARGA -->
                     @elseif(Auth::user()->role == 'warga')
                         <h6 class="sidebar-heading px-3 mt-2 mb-2">Layanan Mandiri</h6>
                         <li class="nav-item">
@@ -227,9 +230,7 @@
             </div>
         </nav>
 
-        <!-- MAIN CONTENT -->
         <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
-            <!-- Animasi Fade In untuk konten -->
             <div class="fade-in-up">
                 @yield('content')
             </div>
@@ -239,7 +240,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <style>
-    /* Animasi halus saat halaman dimuat */
     .fade-in-up {
         animation: fadeInUp 0.5s ease-out;
     }

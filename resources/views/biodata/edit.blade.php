@@ -8,7 +8,7 @@
         </div>
         <div class="card-body">
             {{-- Arahkan action ke route 'update' dengan mengirimkan ID --}}
-            <form action="{{ route('biodata.update', $biodata->id) }}" method="POST">
+            <form action="{{ route('admin.biodata.update', $biodata->id) }}" method="POST">
                 @csrf
                 @method('PUT') {{-- Method khusus untuk update --}}
 

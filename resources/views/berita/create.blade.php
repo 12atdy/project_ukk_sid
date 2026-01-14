@@ -7,7 +7,7 @@
             
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 text-gray-800 fw-bold"><i class="fas fa-pen-nib me-2"></i> Tulis Berita Baru</h1>
-                <a href="{{ route('berita.index') }}" class="btn btn-secondary btn-sm shadow-sm">
+                <a href="{{ route('admin.berita.index') }}" class="btn btn-secondary btn-sm shadow-sm">
                     <i class="fas fa-arrow-left me-1"></i> Kembali
                 </a>
             </div>

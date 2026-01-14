@@ -89,6 +89,10 @@
                                 </div>
                             </div>
 
+                            <div class="text-end mb-3">
+                                <a href="{{ route('password.request') }}" class="text-decoration-none small">Lupa Password?</a>
+                            </div>
+
                             <div class="d-grid mb-4">
                                 <button type="submit" class="btn btn-primary btn-login shadow">
                                     MASUK <i class="fas fa-sign-in-alt ms-2"></i>

@@ -13,7 +13,8 @@
             <h4 class="mb-0">
                 <i class="fas fa-users me-2"></i> Data Biodata Penduduk
             </h4>
-            <a href="{{ route('biodata.create') }}" class="btn btn-primary">
+
+            <a href="{{ route('admin.biodata.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus-circle me-1"></i> Tambah Data Baru
             </a>
         </div>
@@ -30,22 +31,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- INI BAGIAN PENTING UNTUK MENAMPILKAN DATA --}}
-                        @forelse ($data_penduduk as $data)
+                        @forelse($data_penduduk as $penduduk)
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $data->nik }}</td>
-                                <td>{{ $data->nama_lengkap }}</td>
-                                <td>{{ $data->alamat }}</td>
+                                <td>{{ $penduduk->nik }}</td>
+                                <td>{{ $penduduk->nama_lengkap }}</td>
+                                <td>{{ $penduduk->alamat }}</td>
                                 <td class="text-center">
-                                    <form onsubmit="return confirm('Apakah Anda Yakin Ingin Menghapus Data Ini?');" action="{{ route('biodata.destroy', $data->id) }}" method="POST">
-                                        <a href="{{ route('biodata.edit', $data->id) }}" class="btn btn-sm btn-warning">
-                                            <i class="fas fa-edit"></i> EDIT
+                                    <form onsubmit="return confirm('Apakah Anda Yakin ?');" 
+                                          {{-- PERBAIKAN: Gunakan 'admin.biodata.destroy' --}}
+                                          action="{{ route('admin.biodata.destroy', $penduduk->id) }}" method="POST">
+                                        
+                                        {{-- PERBAIKAN: Gunakan 'admin.biodata.show' --}}
+                                        <a href="{{ route('admin.biodata.show', $penduduk->id) }}" class="btn btn-sm btn-info text-white me-1">
+                                            <i class="fas fa-eye"></i> Show
                                         </a>
+
+                                        {{-- PERBAIKAN: Gunakan 'admin.biodata.edit' --}}
+                                        <a href="{{ route('admin.biodata.edit', $penduduk->id) }}" class="btn btn-sm btn-warning text-white me-1">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="fas fa-trash"></i> HAPUS
+                                            <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </form>
                                 </td>
@@ -53,8 +63,8 @@
                         @empty
                             <tr>
                                 <td colspan="5" class="text-center">
-                                    <div class="alert alert-danger mb-0">
-                                        Data penduduk masih kosong.
+                                    <div class="alert alert-warning mb-0">
+                                        Data Biodata belum Tersedia.
                                     </div>
                                 </td>
                             </tr>
@@ -62,6 +72,11 @@
                     </tbody>
                 </table>
             </div>
+            
+            {{-- Pagination Links (Opsional, jika pakai paginate) --}}
+            {{-- <div class="mt-3">
+                {{ $data_penduduk->links() }}
+            </div> --}}
         </div>
     </div>
 @endsection

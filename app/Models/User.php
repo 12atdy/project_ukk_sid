@@ -20,7 +20,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // <--- JANGAN DIHAPUS! Ini kunci supaya user punya status.
+        'role',
+        'otp_code',
+        'otp_expires_at' // <--- JANGAN DIHAPUS! Ini kunci supaya user punya status.
     ];
 
     /**

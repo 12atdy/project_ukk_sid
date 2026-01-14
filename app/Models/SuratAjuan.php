@@ -12,6 +12,10 @@ class SuratAjuan extends Model
     protected $table = 'surat_ajuan';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'lampiran' => 'array',
+    ];
+
     // Relasi ke Pemohon (User Warga)
     public function user()
     {

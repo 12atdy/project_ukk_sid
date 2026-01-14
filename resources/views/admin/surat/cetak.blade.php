@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <title>Cetak Surat - {{ $surat->nomor_surat }}</title>
     <style>
-        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; }
+        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; margin: 0; padding: 20px; }
         .header { text-align: center; border-bottom: 3px double black; padding-bottom: 10px; margin-bottom: 20px; }
-        .logo { width: 80px; height: auto; position: absolute; left: 0; top: 0; }
+        /* .logo { width: 80px; height: auto; position: absolute; left: 0; top: 0; } */
         .judul { font-size: 14pt; font-weight: bold; text-decoration: underline; text-align: center; text-transform: uppercase; margin-bottom: 5px; }
         .nomor { text-align: center; margin-bottom: 20px; }
         .konten { text-align: justify; margin-bottom: 20px; }
         .tabel-data td { vertical-align: top; padding: 2px 0; }
-        .ttd { float: right; width: 40%; text-align: center; margin-top: 30px; }
         
+        /* Tanda Tangan & QR Code */
+        .ttd { float: right; width: 40%; text-align: center; margin-top: 30px; }
+        .ttd img { margin-bottom: 10px; }
+
         /* Style Khusus Kotak Pindah */
         .kotak-pindah {
             border: 2px solid #000;
@@ -25,20 +28,30 @@
             font-weight: bold;
             color: #333;
         }
+
+        /* --- CSS KHUSUS UNTUK PRINT --- */
+        @media print {
+            .no-print { display: none !important; } /* Hilangkan tombol saat print */
+            @page { margin: 0; size: auto; } /* Reset margin browser */
+            body { margin: 2cm 2.5cm; } /* Margin kertas A4 standar */
+            .kotak-pindah { background-color: white !important; } /* Hemat tinta background */
+        }
     </style>
 </head>
 <body>
 
-    <!-- KOP SURAT -->
+    <div class="no-print" style="margin-bottom: 20px; text-align: right; padding: 10px; background: #eee; border-bottom: 1px solid #ddd;">
+        <button onclick="window.history.back()" style="padding: 5px 15px; cursor: pointer;">&larr; Kembali</button>
+        <button onclick="window.print()" style="padding: 5px 15px; cursor: pointer; font-weight: bold; background: #000; color: #fff; border: none;">Cetak Surat</button>
+    </div>
+
     <div class="header">
-        <!-- <img src="{{ public_path('images/logo-sidokerto.png') }}" class="logo"> -->
         <h3 style="margin:0">PEMERINTAH KABUPATEN SIDOARJO</h3>
         <h2 style="margin:0">KECAMATAN BUDURAN</h2>
         <h1 style="margin:0">DESA SIDOKERTO</h1>
         <p style="margin:0">Jl. Raya Sidokerto No. 1, Kode Pos 61252</p>
     </div>
 
-    <!-- JUDUL & NOMOR -->
     @php
         $judul = str_replace('_', ' ', $surat->jenis_surat);
         if($surat->jenis_surat == 'surat_domisili') $judul = "SURAT KETERANGAN PINDAH DOMISILI";
@@ -49,14 +62,10 @@
 
     <div class="konten">
 
-        <!-- ================================================== -->
-        <!-- 1. FORMAT KHUSUS PINDAH DOMISILI (YANG KAMU MINTA) -->
-        <!-- ================================================== -->
         @if($surat->jenis_surat == 'surat_domisili' && $surat->detailDomisili)
             
             <p>Yang bertanda tangan di bawah ini Kepala Desa Sidokerto, Kecamatan Buduran, Kabupaten Sidoarjo, menerangkan permohonan pindah penduduk WNI:</p>
 
-            <!-- Data Diri Pemohon -->
             <table class="tabel-data" width="100%" style="margin-left: 20px; margin-bottom: 15px;">
                 <tr><td width="160">Nama Lengkap</td><td>: <strong>{{ $surat->user->name }}</strong></td></tr>
                 <tr><td>NIK</td><td>: {{ $surat->user->biodata->nik ?? '-' }}</td></tr>
@@ -68,33 +77,23 @@
 
             <p>Bahwa orang tersebut benar-benar mengajukan permohonan <strong>PINDAH TEMPAT TINGGAL</strong> dengan rincian sebagai berikut:</p>
 
-            <!-- VISUALISASI PERPINDAHAN (KOTA A -> KOTA B) -->
             <div class="kotak-pindah">
                 <table width="100%">
                     <tr>
-                        <!-- ALAMAT ASAL -->
                         <td width="45%" style="border-right: 1px dashed #999; padding-right: 10px;">
-                            <strong style="text-decoration: underline;">DAERAH ASAL (LAMA)</strong><br>
-                            <br>
+                            <strong style="text-decoration: underline;">DAERAH ASAL (LAMA)</strong><br><br>
                             {{ $surat->detailDomisili->alamat_asal }}
                         </td>
-                        
-                        <!-- PANAH -->
                         <td width="10%" align="center" valign="middle">
-                            <span class="panah-pindah">&#10142;</span> <!-- Simbol Panah Kanan -->
+                            <span class="panah-pindah">&#10142;</span>
                         </td>
-
-                        <!-- ALAMAT TUJUAN -->
                         <td width="45%" style="padding-left: 10px;">
-                            <strong style="text-decoration: underline;">DAERAH TUJUAN (BARU)</strong><br>
-                            <br>
+                            <strong style="text-decoration: underline;">DAERAH TUJUAN (BARU)</strong><br><br>
                             {{ $surat->detailDomisili->alamat_tujuan }}
                         </td>
                     </tr>
                 </table>
-                
                 <hr style="border-top: 1px solid #000; margin: 10px 0;">
-                
                 <table width="100%">
                     <tr>
                         <td width="50%"><strong>Alasan Pindah:</strong> {{ $surat->detailDomisili->alasan_pindah }}</td>
@@ -105,9 +104,6 @@
 
             <p>Demikian surat keterangan pindah ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
 
-        <!-- ================================================== -->
-        <!-- 2. FORMAT KHUSUS KELAHIRAN (YANG KEMARIN) -->
-        <!-- ================================================== -->
         @elseif($surat->jenis_surat == 'surat_kelahiran' && $surat->detailKelahiran)
             <p>Yang bertanda tangan di bawah ini Kepala Desa Sidokerto, Kecamatan Buduran, Kabupaten Sidoarjo, menerangkan dengan sebenarnya bahwa pada:</p>
             
@@ -129,9 +125,6 @@
 
             <p>Surat keterangan ini dibuat atas dasar yang sebenarnya.</p>
 
-        <!-- ================================================== -->
-        <!-- 3. FORMAT KHUSUS KEMATIAN -->
-        <!-- ================================================== -->
         @elseif($surat->jenis_surat == 'surat_kematian' && $surat->detailKematian)
             <p>Yang bertanda tangan di bawah ini Kepala Desa Sidokerto, Kecamatan Buduran, Kabupaten Sidoarjo, menerangkan bahwa:</p>
             
@@ -153,9 +146,6 @@
 
             <p>Demikian surat keterangan kematian ini dibuat untuk dipergunakan sebagaimana mestinya.</p>
 
-        <!-- ================================================== -->
-        <!-- 4. FORMAT UMUM (USAHA, NIKAH, TANAH) -->
-        <!-- ================================================== -->
         @else
             <p>Yang bertanda tangan di bawah ini Kepala Desa Sidokerto, Kecamatan Buduran, Kabupaten Sidoarjo, menerangkan bahwa:</p>
 
@@ -193,12 +183,21 @@
 
     </div>
 
-    <!-- TANDA TANGAN -->
     <div class="ttd">
         Sidokerto, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
         Kepala Desa Sidokerto
-        <br><br><br><br>
-        <strong>(Nama Kepala Desa)</strong>
+        <br><br>
+
+        @php
+            $urlValidasi = route('cek.surat', $surat->id);
+        @endphp
+
+        {!! QrCode::size(100)->generate($urlValidasi) !!}
+
+        <br>
+        <strong>(BAPAK KEPALA DESA)</strong>
+        <br>
+        <small style="font-size: 10px; color: #555;">Dokumen ini ditandatangani secara elektronik</small>
     </div>
 
 </body>

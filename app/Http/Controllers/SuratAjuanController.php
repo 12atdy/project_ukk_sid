@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Models\SuratAjuan;
+// Import semua Model Detail
 use App\Models\SuratDetailUsaha;
 use App\Models\SuratDetailNikah;
 use App\Models\SuratDetailTanah;
 use App\Models\SuratDetailKelahiran;
 use App\Models\SuratDetailKematian;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use App\Models\SuratDetailDomisili;
 
 class SuratAjuanController extends Controller
@@ -26,42 +27,44 @@ class SuratAjuanController extends Controller
     // Menampilkan form pengajuan surat baru
     public function create()
     {
-        // Ambil data biodata dari user yang sedang login untuk auto-fill
         $biodata = Auth::user()->biodata;
-        
         return view('warga.surat.create', compact('biodata'));
     }
 
     // Menyimpan pengajuan surat ke database
     public function store(Request $request)
     {
-        // 1. Validasi Umum (Wajib buat semua jenis surat)
+        // 1. Validasi Umum
         $request->validate([
-            'jenis_surat'   => 'required|string',
-            'keterangan'    => 'nullable|string',
-            'foto_lampiran' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Wajib Upload Foto, Max 2MB
+            'jenis_surat' => 'required|string',
+            'keterangan'  => 'nullable|string',
+            // Validasi lampiran (array)
+            // 'lampiran' => 'required', // Opsional: kalau wajib ada lampiran, uncomment ini
         ]);
 
-        // 2. Proses Upload Foto Lampiran
-        $pathFoto = null;
-        if ($request->hasFile('foto_lampiran')) {
-            // Simpan ke folder 'storage/app/public/lampiran-surat'
-            // Pastikan sudah menjalankan: php artisan storage:link
-            $pathFoto = $request->file('foto_lampiran')->store('lampiran-surat', 'public');
+        // 2. Proses Upload Lampiran (Multiple File)
+        // Hasilnya array: ['KTP' => 'path/file.jpg', 'KK' => 'path/file2.jpg']
+        $dataLampiran = [];
+        if ($request->hasFile('lampiran')) {
+            foreach ($request->file('lampiran') as $namaSyarat => $file) {
+                // Simpan ke storage/app/public/lampiran_surat
+                $path = $file->store('lampiran_surat', 'public');
+                $dataLampiran[$namaSyarat] = $path;
+            }
         }
 
         // 3. Simpan ke Database dengan Transaksi
-        // Gunakan DB::transaction agar data konsisten (Atomicity)
-        DB::transaction(function () use ($request, $pathFoto) {
+        DB::transaction(function () use ($request, $dataLampiran) {
             
             // A. Simpan Surat Utama (Induk)
             $surat = SuratAjuan::create([
                 'user_id'       => Auth::id(),
                 'jenis_surat'   => $request->jenis_surat,
+                'nomor_surat'   => 'AG/'.date('Ymd').'/'.rand(1000,9999), // Generate No Surat Sementara
                 'tanggal_ajuan' => now(),
                 'status'        => 'menunggu',
                 'keterangan'    => $request->keterangan,
-                'foto_lampiran' => basename($pathFoto), // Simpan nama filenya saja (misal: foto.jpg)
+                'lampiran'      => $dataLampiran, // Simpan Array JSON path file
             ]);
 
             // B. Simpan Detail Sesuai Jenis Surat
@@ -69,59 +72,58 @@ class SuratAjuanController extends Controller
                 
                 // 1. SURAT KETERANGAN USAHA
                 case 'surat_usaha':
-                    $request->validate([
-                        'nama_usaha' => 'required',
-                        'jenis_usaha' => 'required',
-                        'alamat_usaha' => 'required',
-                    ]);
                     SuratDetailUsaha::create([
-                        'ajuan_id'      => $surat->id,
-                        'nama_usaha'    => $request->nama_usaha,
-                        'jenis_usaha'   => $request->jenis_usaha,
-                        'alamat_usaha'  => $request->alamat_usaha,
+                        'ajuan_id'     => $surat->id,
+                        'nama_usaha'   => $request->nama_usaha,
+                        'jenis_usaha'  => $request->jenis_usaha,
+                        'alamat_usaha' => $request->alamat_usaha,
                     ]);
                     break;
 
                 // 2. SURAT PENGANTAR NIKAH
                 case 'surat_nikah':
-                    $request->validate(['nama_calon_pasangan' => 'required']);
                     SuratDetailNikah::create([
-                        'ajuan_id'                => $surat->id,
-                        'nama_calon_pasangan'     => $request->nama_calon_pasangan,
-                        'nik_calon_pasangan'      => $request->nik_calon_pasangan,
-                        'tempat_lahir_calon'      => $request->tempat_lahir_calon,
-                        'tanggal_lahir_calon'     => $request->tanggal_lahir_calon,
-                        'status_perkawinan_calon' => $request->status_perkawinan_calon,
-                        'alamat_calon'            => $request->alamat_calon,
+                        'ajuan_id'              => $surat->id,
+                        'nama_calon_pasangan'   => $request->nama_calon_pasangan,
+                        'nik_calon_pasangan'    => $request->nik_calon_pasangan,
+                        'tempat_lahir_calon'    => $request->tempat_lahir_calon,
+                        'tanggal_lahir_calon'   => $request->tanggal_lahir_calon,
+                        'pekerjaan_calon'       => $request->pekerjaan_calon,       // Baru
+                        'alamat_calon'          => $request->alamat_calon,
+                        'tempat_acara_calon'    => $request->tempat_acara_calon,    // Baru
+                        'status_perkawinan_calon'=> $request->status_perkawinan_calon,
                     ]);
                     break;
 
-                // 3. SURAT KETERANGAN TANAH
+                // UPDATE BAGIAN INI:
+                // 3. SURAT KETERANGAN TANAH (Sesuai Schema)
                 case 'surat_tanah':
-                    $request->validate(['lokasi_tanah' => 'required']);
                     SuratDetailTanah::create([
-                        'ajuan_id'      => $surat->id,
-                        'lokasi_tanah'  => $request->lokasi_tanah,
-                        'luas_tanah_m2' => $request->luas_tanah_m2,
-                        'nomor_kohir'   => $request->nomor_kohir,
-                        'batas_utara'   => $request->batas_utara,
-                        'batas_timur'   => $request->batas_timur,
-                        'batas_selatan' => $request->batas_selatan,
-                        'batas_barat'   => $request->batas_barat,
+                        'ajuan_id'          => $surat->id,
+                        'biodata_id'        => null, // Biarkan null atau isi Auth::user()->biodata->id jika perlu
+                        'user_id'           => null, // Ini biasanya untuk petugas verifikasi, jadi null dulu
+                        'keperluan'         => $request->keterangan, // Ambil dari keterangan utama saja
+                        'nomor_kohir'       => $request->nomor_kohir,
+                        'lokasi_tanah'      => $request->lokasi_tanah,
+                        'luas_tanah_m2'     => $request->luas_tanah_m2,
+                        'batas_utara'       => $request->batas_utara,
+                        'batas_timur'       => $request->batas_timur,
+                        'batas_selatan'     => $request->batas_selatan,
+                        'batas_barat'       => $request->batas_barat,
+                        'riwayat_kepemilikan'=> $request->riwayat_kepemilikan, // Baru
                     ]);
                     break;
 
                 // 4. SURAT KETERANGAN KELAHIRAN
                 case 'surat_kelahiran':
-                    $request->validate(['nama_bayi' => 'required']);
                     SuratDetailKelahiran::create([
                         'ajuan_id'           => $surat->id,
                         'nama_bayi'          => $request->nama_bayi,
-                        'jenis_kelamin_bayi' => $request->jenis_kelamin_bayi,
-                        'tempat_lahir_bayi'  => $request->tempat_lahir_bayi,
+                        'jenis_kelamin_bayi' => 'Laki-laki', // Atau ambil dari request jika ada inputnya
+                        'tempat_lahir_bayi'  => $request->tanggal_lahir_bayi, // Seringkali inputnya satu form
                         'tanggal_lahir_bayi' => $request->tanggal_lahir_bayi,
-                        'jam_lahir'          => $request->jam_lahir,
-                        'anak_ke'            => $request->anak_ke,
+                        'jam_lahir'          => $request->jam_lahir ?? '00:00',
+                        'anak_ke'            => 1, // Default atau ambil dari request
                         'nama_ayah'          => $request->nama_ayah,
                         'nama_ibu'           => $request->nama_ibu,
                     ]);
@@ -129,26 +131,19 @@ class SuratAjuanController extends Controller
 
                 // 5. SURAT KETERANGAN KEMATIAN
                 case 'surat_kematian':
-                    $request->validate(['nama_almarhum' => 'required']);
                     SuratDetailKematian::create([
                         'ajuan_id'          => $surat->id,
                         'nama_almarhum'     => $request->nama_almarhum,
                         'nik_almarhum'      => $request->nik_almarhum,
                         'tanggal_meninggal' => $request->tanggal_meninggal,
-                        'jam_meninggal'     => $request->jam_meninggal,
+                        'jam_meninggal'     => '00:00', // Default
                         'tempat_meninggal'  => $request->tempat_meninggal,
                         'sebab_meninggal'   => $request->sebab_meninggal,
-                        'nama_pelapor'      => $request->nama_pelapor,
-                        'hubungan_pelapor'  => $request->hubungan_pelapor,
                     ]);
                     break;
 
-                    // 6. SURAT PINDAH DOMISILI
+                // 6. SURAT PINDAH DOMISILI
                 case 'surat_domisili':
-                    $request->validate([
-                        'alamat_asal' => 'required',
-                        'alamat_tujuan' => 'required',
-                    ]);
                     SuratDetailDomisili::create([
                         'ajuan_id'      => $surat->id,
                         'alamat_asal'   => $request->alamat_asal,
@@ -161,7 +156,27 @@ class SuratAjuanController extends Controller
 
         });
 
-        // 4. Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('surat.index')->with('success', 'Permohonan surat berhasil dikirim! Silakan tunggu verifikasi admin.');
     }
+
+    public function cetakMandiri($id)
+    {
+        // 1. Cari Surat
+        $surat = SuratAjuan::findOrFail($id);
+
+        // 2. Keamanan: Pastikan yang mau cetak adalah Pemilik Surat
+        if ($surat->user_id != Auth::id()) {
+            abort(403, 'ANDA TIDAK BERHAK MENCETAK SURAT INI!');
+        }
+
+        // 3. Keamanan: Cek Status Harus Selesai
+        if ($surat->status != 'selesai') {
+            return back()->with('error', 'Surat belum selesai diproses admin.');
+        }
+
+        // 4. Tampilkan View Cetak (Kita Pinjam View Admin biar Hemat)
+        // Jadi gak perlu bikin file baru lagi
+        return view('admin.surat.cetak', compact('surat'));
+    }
+
 }
