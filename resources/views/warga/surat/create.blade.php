@@ -58,6 +58,7 @@
                         <div class="mb-3">
                             <label>NIK Almarhum/ah (Jika ada)</label>
                             <input type="number" name="nik_almarhum" class="form-control">
+                            <small class="text-muted fst-italic">* Masukkan 16 digit NIK almarhum.</small>
                         </div>
                         <div class="mb-3">
                             <label>Tanggal Meninggal</label>
@@ -123,6 +124,7 @@
                             <div class="col-md-6 mb-3">
                                 <label>NIK Calon Pasangan</label>
                                 <input type="number" name="nik_calon_pasangan" class="form-control">
+                                <small class="text-muted fst-italic">* Wajib 16 digit.</small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label>Pekerjaan Calon</label>

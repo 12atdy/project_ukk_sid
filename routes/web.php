@@ -13,6 +13,8 @@ use App\Http\Controllers\SuratAjuanController;
 use App\Http\Controllers\Admin\KeuanganController; 
 use App\Models\Berita;
 use App\Models\LogAktivitas;
+use Kreait\Firebase\Factory;
+
 
 // --- HALAMAN DEPAN (LANDING PAGE) ---
 Route::get('/', function () {
@@ -77,9 +79,33 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show');
     Route::post('/pengaduan/{id}/tanggapi', [PengaduanController::class, 'tanggapi'])->name('pengaduan.tanggapi');
 
-    // Log Aktivitas
+   // Log Aktivitas (VERSI FIREBASE)
     Route::get('/log', function() {
-        $logs = LogAktivitas::with('user')->latest()->paginate(20);
+        try {
+            // 1. Konek ke Firebase
+            $factory = (new Factory)
+                ->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')))
+                ->withDatabaseUri(env('FIREBASE_DATABASE_URL'));
+            
+            $database = $factory->createDatabase();
+
+            // 2. Ambil 50 data terakhir & Urutkan
+            $reference = $database->getReference('logs')
+                                  ->orderByChild('timestamp')
+                                  ->limitToLast(50);
+            
+            $snapshot = $reference->getSnapshot();
+            $logs = $snapshot->getValue(); // Hasilnya berupa Array
+
+            // 3. Balik urutan biar yang terbaru di atas
+            // Kalau null (kosong), set jadi array kosong []
+            $logs = $logs ? array_reverse($logs) : [];
+
+        } catch (\Exception $e) {
+            // Kalau error, kasih array kosong biar gak crash
+            $logs = []; 
+        }
+
         return view('admin.log.index', compact('logs'));
     })->name('log.index');
 });
@@ -127,3 +153,4 @@ Route::get('/cek-surat/{id}', function($id) {
                 <p><strong>Tanggal:</strong> {$surat->created_at->format('d M Y')}</p>
             </div>";
     })->name('cek.surat');
+    

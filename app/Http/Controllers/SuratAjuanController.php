@@ -156,6 +156,12 @@ class SuratAjuanController extends Controller
 
         });
 
+        // 1. Kita rapikan dulu nama suratnya biar enak dibaca (misal: "surat_nikah" jadi "SURAT NIKAH")
+        $namaSurat = strtoupper(str_replace('_', ' ', $request->jenis_surat));
+
+        // 2. Panggil Helper Log ke Firebase
+        \App\Helpers\LogHelper::catat("Mengajukan permohonan $namaSurat");
+
         return redirect()->route('surat.index')->with('success', 'Permohonan surat berhasil dikirim! Silakan tunggu verifikasi admin.');
     }
 

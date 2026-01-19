@@ -27,10 +27,16 @@
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">NIK (Nomor Induk Kependudukan)</label>
                                 <input type="number" name="nik" class="form-control" value="{{ old('nik', $biodata->nik) }}" required>
+                                <div class="form-text text-primary small">
+                                    <i class="fas fa-info-circle"></i> Wajib 16 digit angka sesuai KTP.
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Nomor KK</label>
                                 <input type="number" name="no_kk" class="form-control" value="{{ old('no_kk', $biodata->no_kk) }}">
+                                <div class="form-text text-primary small">
+                                    <i class="fas fa-info-circle"></i> Wajib 16 digit angka sesuai KK.
+                                </div>
                             </div>
 
                             <div class="col-md-12">

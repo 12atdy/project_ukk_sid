@@ -42,6 +42,9 @@
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" name="password" id="password" class="form-control" required>
+                        <small class="text-muted">
+                            * Minimal 8 karakter (Huruf & Angka).
+                        </small>
                     </div>
                     <div class="mb-3">
                         <label for="password_confirmation" class="form-label">Konfirmasi Password</label>

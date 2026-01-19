@@ -47,6 +47,7 @@ class WargaController extends Controller
     {
         $request->validate([
             'nik' => 'required|numeric|digits:16',
+            'no_kk' =>'required|numeric|digits:16',
             'nama_lengkap' => 'required|string|max:255',
             'jenis_kelamin' => 'required',
             'tempat_lahir' => 'required',
@@ -72,10 +73,7 @@ class WargaController extends Controller
             ]
         );
 
-        LogAktivitas::create([
-        'user_id' => Auth::id(),
-        'aktivitas' => 'Memperbarui biodata profil diri',
-        ]);
+       \App\Helpers\LogHelper::catat('Warga memperbarui biodata profil diri');
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
     }

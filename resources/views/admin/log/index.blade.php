@@ -2,35 +2,53 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Catatan Aktivitas Sistem (Log)</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-gray-800">Log Aktivitas (Realtime Firebase)</h1>
+        <span class="badge badge-success px-3 py-2">
+            <i class="fas fa-satellite-dish"></i> Live Connection
+        </span>
+    </div>
 
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-sm table-bordered table-striped" width="100%">
+                <table class="table table-bordered table-striped" width="100%">
                     <thead class="bg-dark text-white">
                         <tr>
-                            <th>Waktu</th>
-                            <th>Pelaku (User)</th>
+                            <th width="20%">Waktu</th>
+                            <th width="25%">Pelaku</th>
                             <th>Aktivitas</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($logs as $log)
+                        @forelse($logs as $log)
                         <tr>
-                            <td width="200">{{ $log->created_at->format('d M Y, H:i:s') }}</td>
-                            <td width="250">
-                                <strong>{{ $log->user->name ?? 'Guest' }}</strong><br>
-                                <small class="text-muted">{{ $log->user->role ?? '-' }}</small>
+                            {{-- WAKTU --}}
+                            <td>
+                                {{ \Carbon\Carbon::parse($log['waktu'])->isoFormat('D MMMM Y, HH:mm:ss') }}
                             </td>
-                            <td>{{ $log->aktivitas }}</td>
+                            
+                            {{-- PELAKU --}}
+                            <td>
+                                <strong>{{ $log['nama_user'] ?? 'Guest' }}</strong><br>
+                                <span class="badge badge-secondary">{{ ucfirst($log['role'] ?? '-') }}</span>
+                            </td>
+
+                            {{-- AKTIVITAS --}}
+                            <td>
+                                {{ $log['aktivitas'] }}
+                            </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="3" class="text-center p-4">
+                                <em>Belum ada data aktivitas di Firebase.</em>
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
-                <div class="mt-3">
-                    {{ $logs->links() }}
-                </div>
+                <small class="text-muted">* Menampilkan 50 aktivitas terakhir dari Cloud.</small>
             </div>
         </div>
     </div>
