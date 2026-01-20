@@ -8,108 +8,67 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
         body { 
-            background-color: #f4f6f9; /* Warna background lebih soft (AdminLTE style) */
+            background-color: #f4f6f9; 
             font-family: 'Inter', sans-serif;
-            overflow-x: hidden; /* Mencegah scroll samping */
+            overflow-x: hidden; 
         }
 
-        /* --- 1. NAVBAR FIXED (NEMPEL DI ATAS) --- */
+        /* --- 1. NAVBAR FIXED --- */
         .navbar-custom {
-            top: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            height: 60px; /* Tinggi tetap biar rapi */
+            top: 0; left: 0; right: 0; width: 100%; height: 60px;
             background-color: #ffffff;
-            border-bottom: 1px solid #dee2e6; /* Garis pemisah tipis */
+            border-bottom: 1px solid #dee2e6;
             box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-            padding: 0 1rem;
-            z-index: 1040;
-            display: flex;
-            align-items: center;
+            padding: 0 1rem; z-index: 1040;
+            display: flex; align-items: center;
         }
 
-        /* --- 2. SIDEBAR (Full Height) --- */
+        /* --- 2. SIDEBAR --- */
         .sidebar {
-            position: fixed;
-            top: 60px; /* Mundur sesuai tinggi navbar */
-            bottom: 0;
-            left: 0;
-            z-index: 100;
+            position: fixed; top: 60px; bottom: 0; left: 0; z-index: 100;
             padding: 20px 0 0;
             box-shadow: 1px 0 0 rgba(0, 0, 0, .1);
-            background-color: #ffffff;
-            transition: all 0.3s;
+            background-color: #ffffff; transition: all 0.3s;
         }
         
         .sidebar-sticky {
-            position: relative;
-            top: 0;
-            height: calc(100vh - 60px);
-            padding-top: 0.5rem;
-            overflow-x: hidden;
-            overflow-y: auto;
+            position: relative; top: 0; height: calc(100vh - 60px);
+            padding-top: 0.5rem; overflow-x: hidden; overflow-y: auto;
         }
 
-        /* Menu Link Styling */
         .nav-link {
-            font-weight: 500;
-            color: #495057;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            border-radius: 0; /* Hapus radius biar kotak */
-            border-left: 4px solid transparent; /* Indikator aktif di kiri */
+            font-weight: 500; color: #495057; padding: 10px 20px;
+            display: flex; align-items: center; border-radius: 0;
+            border-left: 4px solid transparent; 
         }
-        
-        .nav-link:hover {
-            color: #0d6efd;
-            background-color: #f8f9fa;
-        }
-        
-        /* Menu Aktif (Indikator Biru di Kiri) */
+        .nav-link:hover { color: #0d6efd; background-color: #f8f9fa; }
         .nav-link.active {
-            color: #0d6efd;
-            background-color: #e9ecef;
-            font-weight: 700;
-            border-left-color: #0d6efd; 
+            color: #0d6efd; background-color: #e9ecef;
+            font-weight: 700; border-left-color: #0d6efd; 
         }
 
         .sidebar-heading {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-            color: #adb5bd;
-            margin-top: 15px;
-            margin-bottom: 10px;
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+            font-weight: 700; color: #adb5bd; margin-top: 15px; margin-bottom: 10px;
         }
 
         /* --- 3. KONTEN UTAMA --- */
         .main-content {
-            margin-left: 240px; 
-            padding-top: 80px; /* Jarak aman dari navbar */
-            padding-right: 20px;
-            padding-left: 20px;
-            padding-bottom: 40px;
+            margin-left: 240px; padding-top: 80px; 
+            padding-right: 20px; padding-left: 20px; padding-bottom: 40px;
             transition: all 0.3s;
         }
 
-        /* --- RESPONSIVE (HP) --- */
+        /* --- RESPONSIVE --- */
         @media (max-width: 767.98px) {
-            .sidebar {
-                top: 60px;
-                z-index: 1050; 
-                width: 100%; /* Sidebar menutupi layar di HP */
-            }
-            .main-content { 
-                margin-left: 0; 
-                padding-top: 80px; 
-            }
+            .sidebar { top: 60px; z-index: 1050; width: 100%; }
+            .main-content { margin-left: 0; padding-top: 80px; }
         }
     </style>
 </head>
@@ -117,23 +76,18 @@
 
 <nav class="navbar navbar-expand-md navbar-light fixed-top navbar-custom">
     <div class="container-fluid px-0">
-        
-        <button class="navbar-toggler border-0 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler border-0 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="#">
-            {{-- LOGO DESA --}}
             <img src="{{ asset('images/logo-sidokerto.png') }}" alt="Logo" height="35" class="me-2">
-            
-            <span style="font-size: 1.1rem; letter-spacing: -0.5px;">
-                SIDOKERTO<span class="text-dark">APP</span>
-            </span>
+            <span style="font-size: 1.1rem; letter-spacing: -0.5px;">SIDOKERTO<span class="text-dark">APP</span></span>
         </a>
 
         <ul class="navbar-nav ms-auto align-items-center">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-dark fw-bold d-flex align-items-center p-0" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle text-dark fw-bold d-flex align-items-center p-0" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                     <div class="d-flex flex-column text-end me-2 d-none d-md-block" style="line-height: 1.1;">
                         <span style="font-size: 0.9rem;">{{ Auth::user()->name }}</span>
                         <span class="text-muted" style="font-size: 0.7rem;">{{ ucfirst(Auth::user()->role) }}</span>
@@ -142,7 +96,7 @@
                         <i class="fas fa-user"></i>
                     </div>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2" aria-labelledby="userDropdown">
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2">
                     <li class="d-md-none text-center py-2 bg-light">
                         <strong>{{ Auth::user()->name }}</strong><br>
                         <small class="text-muted">{{ ucfirst(Auth::user()->role) }}</small>
@@ -171,47 +125,38 @@
                     
                     @if(Auth::user()->role == 'admin')
                         <h6 class="sidebar-heading px-3">UTAMA</h6>
-                        
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
                                 <i class="fas fa-tachometer-alt fa-fw me-2"></i> Dashboard
                             </a>
                         </li>
-
                         <h6 class="sidebar-heading px-3">DATA MASTER</h6>
-
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.biodata.*') ? 'active' : '' }}" href="{{ route('admin.biodata.index') }}">
                                 <i class="fas fa-users fa-fw me-2"></i> Data Penduduk
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.berita.*') ? 'active' : '' }}" href="{{ route('admin.berita.index') }}">
                                 <i class="fas fa-newspaper fa-fw me-2"></i> Berita Desa
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.keuangan.*') ? 'active' : '' }}" href="{{ route('admin.keuangan.index') }}">
                                 <i class="fas fa-wallet fa-fw me-2"></i> Keuangan Desa
                             </a>
                         </li>
-
                         <h6 class="sidebar-heading px-3">ADMINISTRASI</h6>
-
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.surat.*') ? 'active' : '' }}" href="{{ route('admin.surat.index') }}">
                                 <i class="fas fa-envelope-open-text fa-fw me-2"></i> Surat Masuk
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.pengaduan.*') ? 'active' : '' }}" href="{{ route('admin.pengaduan.index') }}">
                                 <i class="fas fa-bullhorn fa-fw me-2"></i> Pengaduan
                             </a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.log.*') ? 'active' : '' }}" href="{{ route('admin.log.index') }}">
                                 <i class="fas fa-history fa-fw me-2"></i> Log Aktivitas
@@ -263,14 +208,72 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function() {
+        
+        // A. AKTIFKAN DATATABLES
+        // Cari semua tabel dengan class 'datatable' dan ubah jadi tabel canggih
+        $('.datatable').DataTable({
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json" // Bahasa Indonesia
+            }
+        });
+
+        // B. AKTIFKAN SWEETALERT (POPUP)
+        // Kalau ada session success dari controller
+        @if(session('success'))
+            Swal.fire({
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonColor: '#0d6efd',
+                timer: 3000
+            });
+        @endif
+
+        // Kalau ada session error
+        @if(session('error'))
+            Swal.fire({
+                title: 'Gagal!',
+                text: "{{ session('error') }}",
+                icon: 'error',
+                confirmButtonColor: '#dc3545',
+            });
+        @endif
+
+        // C. KONFIRMASI HAPUS (Optional)
+        // Gunakan class "form-delete" di form delete kamu
+        $('.form-delete').on('submit', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Yakin hapus data?',
+                text: "Data yang dihapus tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
+
+    });
+</script>
+
 <style>
-    .fade-in-up {
-        animation: fadeInUp 0.5s ease-out;
-    }
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    .fade-in-up { animation: fadeInUp 0.5s ease-out; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
+
 </body>
 </html>
