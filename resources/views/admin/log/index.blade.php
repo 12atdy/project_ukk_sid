@@ -36,7 +36,8 @@
 
                             {{-- AKTIVITAS --}}
                             <td>
-                                {{ $log['aktivitas'] }}
+                                {{-- Kalau ada 'aktivitas' tampilkan, kalau nggak ada (data debug) tampilkan 'pesan', kalau kosong semua strip '-' --}}
+                                {{ $log['aktivitas'] ?? $log['pesan'] ?? '-' }}
                             </td>
                         </tr>
                         @empty

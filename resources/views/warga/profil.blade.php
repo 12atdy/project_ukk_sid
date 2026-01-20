@@ -53,9 +53,11 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Tanggal Lahir</label>
-                                <input type="date" name="tanggal_lahir" class="form-control" value="{{ old('tanggal_lahir', $biodata->tanggal_lahir) }}" required>
+                                {{-- Ganti $user->biodata jadi $biodata saja --}}
+                                <input type="date" name="tanggal_lahir" class="form-control"
+                                       value="{{ old('tanggal_lahir', $biodata->tanggal_lahir) }}"
+                                       max="{{ date('Y-m-d') }}">
                             </div>
-
                             <div class="col-md-6">
                                 <label class="form-label">Jenis Kelamin</label>
                                 <select name="jenis_kelamin" class="form-select" required>

@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\SuratAjuan;
-// Import semua Model Detail
 use App\Models\SuratDetailUsaha;
 use App\Models\SuratDetailNikah;
 use App\Models\SuratDetailTanah;
@@ -38,8 +37,14 @@ class SuratAjuanController extends Controller
         $request->validate([
             'jenis_surat' => 'required|string',
             'keterangan'  => 'nullable|string',
-            // Validasi lampiran (array)
-            // 'lampiran' => 'required', // Opsional: kalau wajib ada lampiran, uncomment ini
+            
+            // Validasi Tanggal (Tidak boleh masa depan)
+            'tanggal_meninggal'   => 'nullable|date|before_or_equal:today',
+            'tanggal_lahir_bayi'  => 'nullable|date|before_or_equal:today',
+            'tanggal_lahir_calon' => 'nullable|date|before_or_equal:today',
+        ], [
+            // Pesan error custom (Opsional)
+            'before_or_equal' => 'Tanggal tidak boleh melebihi hari ini!',
         ]);
 
         // 2. Proses Upload Lampiran (Multiple File)
@@ -88,21 +93,20 @@ class SuratAjuanController extends Controller
                         'nik_calon_pasangan'    => $request->nik_calon_pasangan,
                         'tempat_lahir_calon'    => $request->tempat_lahir_calon,
                         'tanggal_lahir_calon'   => $request->tanggal_lahir_calon,
-                        'pekerjaan_calon'       => $request->pekerjaan_calon,       // Baru
+                        'pekerjaan_calon'       => $request->pekerjaan_calon,       
                         'alamat_calon'          => $request->alamat_calon,
-                        'tempat_acara_calon'    => $request->tempat_acara_calon,    // Baru
+                        'tempat_acara_calon'    => $request->tempat_acara_calon,    
                         'status_perkawinan_calon'=> $request->status_perkawinan_calon,
                     ]);
                     break;
 
-                // UPDATE BAGIAN INI:
-                // 3. SURAT KETERANGAN TANAH (Sesuai Schema)
+                // 3. SURAT KETERANGAN TANAH
                 case 'surat_tanah':
                     SuratDetailTanah::create([
                         'ajuan_id'          => $surat->id,
-                        'biodata_id'        => null, // Biarkan null atau isi Auth::user()->biodata->id jika perlu
-                        'user_id'           => null, // Ini biasanya untuk petugas verifikasi, jadi null dulu
-                        'keperluan'         => $request->keterangan, // Ambil dari keterangan utama saja
+                        'biodata_id'        => null, 
+                        'user_id'           => null, 
+                        'keperluan'         => $request->keterangan, 
                         'nomor_kohir'       => $request->nomor_kohir,
                         'lokasi_tanah'      => $request->lokasi_tanah,
                         'luas_tanah_m2'     => $request->luas_tanah_m2,
@@ -110,7 +114,7 @@ class SuratAjuanController extends Controller
                         'batas_timur'       => $request->batas_timur,
                         'batas_selatan'     => $request->batas_selatan,
                         'batas_barat'       => $request->batas_barat,
-                        'riwayat_kepemilikan'=> $request->riwayat_kepemilikan, // Baru
+                        'riwayat_kepemilikan'=> $request->riwayat_kepemilikan, 
                     ]);
                     break;
 
@@ -119,11 +123,11 @@ class SuratAjuanController extends Controller
                     SuratDetailKelahiran::create([
                         'ajuan_id'           => $surat->id,
                         'nama_bayi'          => $request->nama_bayi,
-                        'jenis_kelamin_bayi' => 'Laki-laki', // Atau ambil dari request jika ada inputnya
-                        'tempat_lahir_bayi'  => $request->tanggal_lahir_bayi, // Seringkali inputnya satu form
+                        'jenis_kelamin_bayi' => 'Laki-laki', 
+                        'tempat_lahir_bayi'  => $request->tanggal_lahir_bayi, 
                         'tanggal_lahir_bayi' => $request->tanggal_lahir_bayi,
                         'jam_lahir'          => $request->jam_lahir ?? '00:00',
-                        'anak_ke'            => 1, // Default atau ambil dari request
+                        'anak_ke'            => 1, 
                         'nama_ayah'          => $request->nama_ayah,
                         'nama_ibu'           => $request->nama_ibu,
                     ]);
@@ -136,7 +140,7 @@ class SuratAjuanController extends Controller
                         'nama_almarhum'     => $request->nama_almarhum,
                         'nik_almarhum'      => $request->nik_almarhum,
                         'tanggal_meninggal' => $request->tanggal_meninggal,
-                        'jam_meninggal'     => '00:00', // Default
+                        'jam_meninggal'     => '00:00', 
                         'tempat_meninggal'  => $request->tempat_meninggal,
                         'sebab_meninggal'   => $request->sebab_meninggal,
                     ]);
@@ -156,7 +160,7 @@ class SuratAjuanController extends Controller
 
         });
 
-        // 1. Kita rapikan dulu nama suratnya biar enak dibaca (misal: "surat_nikah" jadi "SURAT NIKAH")
+        // 1. Kita rapikan dulu nama suratnya biar enak dibaca
         $namaSurat = strtoupper(str_replace('_', ' ', $request->jenis_surat));
 
         // 2. Panggil Helper Log ke Firebase
@@ -181,7 +185,6 @@ class SuratAjuanController extends Controller
         }
 
         // 4. Tampilkan View Cetak (Kita Pinjam View Admin biar Hemat)
-        // Jadi gak perlu bikin file baru lagi
         return view('admin.surat.cetak', compact('surat'));
     }
 

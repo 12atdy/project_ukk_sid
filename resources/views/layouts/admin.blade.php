@@ -12,33 +12,36 @@
 
     <style>
         body { 
-            background-color: #f3f4f6; 
+            background-color: #f4f6f9; /* Warna background lebih soft (AdminLTE style) */
             font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Mencegah scroll samping */
         }
 
-        /* --- GAYA NAVBAR MENGAMBANG --- */
-        .navbar-floating {
-            top: 15px; 
-            left: 15px; 
-            right: 15px; 
-            width: auto; 
-            border-radius: 16px; 
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 0.8rem 1.5rem;
-            z-index: 1040; 
+        /* --- 1. NAVBAR FIXED (NEMPEL DI ATAS) --- */
+        .navbar-custom {
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 60px; /* Tinggi tetap biar rapi */
+            background-color: #ffffff;
+            border-bottom: 1px solid #dee2e6; /* Garis pemisah tipis */
+            box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+            padding: 0 1rem;
+            z-index: 1040;
+            display: flex;
+            align-items: center;
         }
 
-        /* --- GAYA SIDEBAR --- */
+        /* --- 2. SIDEBAR (Full Height) --- */
         .sidebar {
             position: fixed;
-            top: 0;
+            top: 60px; /* Mundur sesuai tinggi navbar */
             bottom: 0;
             left: 0;
-            z-index: 100; 
-            padding: 100px 0 0; 
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .05);
+            z-index: 100;
+            padding: 20px 0 0;
+            box-shadow: 1px 0 0 rgba(0, 0, 0, .1);
             background-color: #ffffff;
             transition: all 0.3s;
         }
@@ -46,8 +49,8 @@
         .sidebar-sticky {
             position: relative;
             top: 0;
-            height: calc(100vh - 100px);
-            padding-top: .5rem;
+            height: calc(100vh - 60px);
+            padding-top: 0.5rem;
             overflow-x: hidden;
             overflow-y: auto;
         }
@@ -55,23 +58,25 @@
         /* Menu Link Styling */
         .nav-link {
             font-weight: 500;
-            color: #64748b; 
+            color: #495057;
             padding: 10px 20px;
-            margin: 2px 15px;
-            border-radius: 10px;
-            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            border-radius: 0; /* Hapus radius biar kotak */
+            border-left: 4px solid transparent; /* Indikator aktif di kiri */
         }
         
         .nav-link:hover {
             color: #0d6efd;
-            background-color: #f1f5f9;
+            background-color: #f8f9fa;
         }
         
+        /* Menu Aktif (Indikator Biru di Kiri) */
         .nav-link.active {
             color: #0d6efd;
-            background-color: #eff6ff;
+            background-color: #e9ecef;
             font-weight: 700;
-            box-shadow: 0 2px 5px rgba(13, 110, 253, 0.1);
+            border-left-color: #0d6efd; 
         }
 
         .sidebar-heading {
@@ -79,33 +84,38 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: 700;
-            color: #94a3b8;
+            color: #adb5bd;
+            margin-top: 15px;
+            margin-bottom: 10px;
         }
 
-        /* --- CONTENT ADJUSTMENT --- */
+        /* --- 3. KONTEN UTAMA --- */
         .main-content {
             margin-left: 240px; 
-            padding-top: 110px; 
-            padding-right: 15px;
-            padding-left: 15px;
+            padding-top: 80px; /* Jarak aman dari navbar */
+            padding-right: 20px;
+            padding-left: 20px;
+            padding-bottom: 40px;
             transition: all 0.3s;
         }
 
-        /* --- RESPONSIVE --- */
+        /* --- RESPONSIVE (HP) --- */
         @media (max-width: 767.98px) {
             .sidebar {
-                top: 85px; 
-                padding-top: 0;
+                top: 60px;
                 z-index: 1050; 
+                width: 100%; /* Sidebar menutupi layar di HP */
             }
-            .main-content { margin-left: 0; padding-top: 120px; }
-            .navbar-floating { left: 10px; right: 10px; top: 10px; }
+            .main-content { 
+                margin-left: 0; 
+                padding-top: 80px; 
+            }
         }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-md navbar-light fixed-top navbar-floating">
+<nav class="navbar navbar-expand-md navbar-light fixed-top navbar-custom">
     <div class="container-fluid px-0">
         
         <button class="navbar-toggler border-0 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,21 +123,31 @@
         </button>
 
         <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="#">
-            <i class="fas fa-landmark fa-lg me-2"></i>
-            <span>SIDOKERTO<span class="text-dark">APP</span></span>
+            {{-- LOGO DESA --}}
+            <img src="{{ asset('images/logo-sidokerto.png') }}" alt="Logo" height="35" class="me-2">
+            
+            <span style="font-size: 1.1rem; letter-spacing: -0.5px;">
+                SIDOKERTO<span class="text-dark">APP</span>
+            </span>
         </a>
 
         <ul class="navbar-nav ms-auto align-items-center">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-dark fw-bold d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 35px; height: 35px;">
-                        {{ substr(Auth::user()->name, 0, 1) }}
+                <a class="nav-link dropdown-toggle text-dark fw-bold d-flex align-items-center p-0" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="d-flex flex-column text-end me-2 d-none d-md-block" style="line-height: 1.1;">
+                        <span style="font-size: 0.9rem;">{{ Auth::user()->name }}</span>
+                        <span class="text-muted" style="font-size: 0.7rem;">{{ ucfirst(Auth::user()->role) }}</span>
                     </div>
-                    <span class="d-none d-sm-inline">{{ Auth::user()->name }}</span>
+                    <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;">
+                        <i class="fas fa-user"></i>
+                    </div>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-3 mt-2" aria-labelledby="userDropdown">
-                    <li><span class="dropdown-item-text text-muted small">Role: {{ ucfirst(Auth::user()->role) }}</span></li>
-                    <li><hr class="dropdown-divider"></li>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2" aria-labelledby="userDropdown">
+                    <li class="d-md-none text-center py-2 bg-light">
+                        <strong>{{ Auth::user()->name }}</strong><br>
+                        <small class="text-muted">{{ ucfirst(Auth::user()->role) }}</small>
+                    </li>
+                    <li><hr class="dropdown-divider d-md-none"></li>
                     <li>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
@@ -150,13 +170,15 @@
                 <ul class="nav flex-column">
                     
                     @if(Auth::user()->role == 'admin')
-                        <h6 class="sidebar-heading px-3 mt-2 mb-2">Administrator</h6>
+                        <h6 class="sidebar-heading px-3">UTAMA</h6>
                         
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
                                 <i class="fas fa-tachometer-alt fa-fw me-2"></i> Dashboard
                             </a>
                         </li>
+
+                        <h6 class="sidebar-heading px-3">DATA MASTER</h6>
 
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.biodata.*') ? 'active' : '' }}" href="{{ route('admin.biodata.index') }}">
@@ -171,6 +193,14 @@
                         </li>
 
                         <li class="nav-item">
+                            <a class="nav-link {{ Request::routeIs('admin.keuangan.*') ? 'active' : '' }}" href="{{ route('admin.keuangan.index') }}">
+                                <i class="fas fa-wallet fa-fw me-2"></i> Keuangan Desa
+                            </a>
+                        </li>
+
+                        <h6 class="sidebar-heading px-3">ADMINISTRASI</h6>
+
+                        <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.surat.*') ? 'active' : '' }}" href="{{ route('admin.surat.index') }}">
                                 <i class="fas fa-envelope-open-text fa-fw me-2"></i> Surat Masuk
                             </a>
@@ -183,19 +213,13 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link {{ Request::routeIs('admin.keuangan.*') ? 'active' : '' }}" href="{{ route('admin.keuangan.index') }}">
-                                <i class="fas fa-money-bill-wave fa-fw me-2"></i> Keuangan Desa
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('admin.log.*') ? 'active' : '' }}" href="{{ route('admin.log.index') }}">
                                 <i class="fas fa-history fa-fw me-2"></i> Log Aktivitas
                             </a>
                         </li>
 
                     @elseif(Auth::user()->role == 'warga')
-                        <h6 class="sidebar-heading px-3 mt-2 mb-2">Layanan Mandiri</h6>
+                        <h6 class="sidebar-heading px-3">LAYANAN MANDIRI</h6>
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('warga.dashboard') ? 'active' : '' }}" href="{{ route('warga.dashboard') }}">
                                 <i class="fas fa-home fa-fw me-2"></i> Beranda
@@ -208,22 +232,22 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('surat.*') ? 'active' : '' }}" href="{{ route('surat.index') }}">
-                                <i class="fas fa-envelope fa-fw me-2"></i> Surat Menyurat
+                                <i class="fas fa-file-alt fa-fw me-2"></i> Buat Surat
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ Request::routeIs('pengaduan.*') ? 'active' : '' }}" href="{{ route('pengaduan.index') }}">
-                                <i class="fas fa-comment-dots fa-fw me-2"></i> Pengaduan
+                                <i class="fas fa-comment-dots fa-fw me-2"></i> Lapor/Aduan
                             </a>
                         </li>
                     @endif
                 </ul>
 
-                <h6 class="sidebar-heading px-3 mt-4 mb-2">Pintasan</h6>
+                <h6 class="sidebar-heading px-3 mt-4">Pintasan</h6>
                 <ul class="nav flex-column mb-2">
                     <li class="nav-item">
                         <a class="nav-link text-secondary" href="{{ url('/') }}">
-                            <i class="fas fa-globe fa-fw me-2"></i> Web Desa
+                            <i class="fas fa-globe fa-fw me-2"></i> Website Desa
                         </a>
                     </li>
                 </ul>
@@ -244,7 +268,7 @@
         animation: fadeInUp 0.5s ease-out;
     }
     @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
+        from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
     }
 </style>

@@ -60,10 +60,14 @@
                             <input type="number" name="nik_almarhum" class="form-control">
                             <small class="text-muted fst-italic">* Masukkan 16 digit NIK almarhum.</small>
                         </div>
+                        
+                        {{-- UPDATE: Tambah max today --}}
                         <div class="mb-3">
                             <label>Tanggal Meninggal</label>
-                            <input type="date" name="tanggal_meninggal" class="form-control">
+                            <input type="date" name="tanggal_meninggal" class="form-control" 
+                                   max="{{ date('Y-m-d') }}">
                         </div>
+
                         <div class="mb-3">
                             <label>Tempat Meninggal</label>
                             <input type="text" name="tempat_meninggal" class="form-control">
@@ -80,10 +84,14 @@
                             <label>Nama Bayi</label>
                             <input type="text" name="nama_bayi" class="form-control">
                         </div>
+                        
+                        {{-- UPDATE: Tambah max today --}}
                         <div class="mb-3">
                             <label>Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir_bayi" class="form-control">
+                            <input type="date" name="tanggal_lahir_bayi" class="form-control" 
+                                   max="{{ date('Y-m-d') }}">
                         </div>
+
                         <div class="mb-3">
                             <label>Nama Ayah</label>
                             <input type="text" name="nama_ayah" class="form-control">
@@ -136,10 +144,14 @@
                                 <label>Tempat Lahir</label>
                                 <input type="text" name="tempat_lahir_calon" class="form-control">
                             </div>
+                            
+                            {{-- UPDATE: Tambah max today --}}
                             <div class="col-md-6 mb-3">
                                 <label>Tanggal Lahir</label>
-                                <input type="date" name="tanggal_lahir_calon" class="form-control">
+                                <input type="date" name="tanggal_lahir_calon" class="form-control"
+                                    max="{{ date('Y-m-d') }}">
                             </div>
+
                         </div>
                         <div class="mb-3">
                             <label>Status Perkawinan</label>

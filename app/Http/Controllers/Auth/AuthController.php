@@ -11,12 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Biodata;
 use Illuminate\Support\Facades\Hash;
-use App\Models\LogAktivitas;
+use App\Helpers\LogHelper; // <-- SUDAH DIGANTI PAKAI HELPER
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendOtpMail; 
 use Carbon\Carbon;
-
-
 
 class AuthController extends Controller
 {
@@ -37,27 +35,18 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // [PERBAIKAN UTAMA ADA DISINI]
             $role = Auth::user()->role;
 
             if ($role == 'admin') {
-                // Rekam Log
-                LogAktivitas::create([
-                    'user_id' => Auth::id(),
-                    'aktivitas' => 'Melakukan Login sebagai Admin',
-                ]);
+                // Rekam Log ke Firebase
+                LogHelper::catat('Melakukan Login sebagai Admin');
                 
-                // GUNAKAN ->route() BUKAN ->intended('string')
                 return redirect()->route('admin.dashboard');
 
             } elseif ($role == 'warga') {
-                // Rekam Log
-                LogAktivitas::create([
-                    'user_id' => Auth::id(),
-                    'aktivitas' => 'Melakukan Login sebagai Warga',
-                ]);
+                // Rekam Log ke Firebase
+                LogHelper::catat('Melakukan Login sebagai Warga');
 
-                // GUNAKAN ->route()
                 return redirect()->route('warga.dashboard');
 
             } else {
@@ -155,32 +144,25 @@ class AuthController extends Controller
             'nama_lengkap' => $request->name,
         ]);
 
-        // 4. Kirim Email OTP (Kita buat mailer-nya habis ini)
+        // Kirim Email OTP
         try {
-        // Pastikan sudah menambahkan: use App\Mail\SendOtpMail; di paling atas file
             Mail::to($user->email)->send(new SendOtpMail($user, $otpCode));
         } catch (\Exception $e) {
-        // Jika gagal kirim email, biarkan saja dulu (untuk dev)
+            // Jika gagal kirim email, biarkan saja (untuk dev)
         }
 
-        // 5. Arahkan ke Halaman Verifikasi (Bawa Emailnya)
+        // Rekam Log (Ditaruh SEBELUM return supaya jalan)
+        LogHelper::catat('Mendaftar akun warga baru');
+
+        // Arahkan ke Halaman Verifikasi
         return redirect()->route('verification.notice', ['email' => $user->email]);
-
-        LogAktivitas::create([
-            'user_id' => $user->id,
-            'aktivitas' => 'Mendaftar akun warga baru',
-        ]);
-
-        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Silakan login.');
     }
 
     public function logout(Request $request)
     {
         if(Auth::check()){
-            LogAktivitas::create([
-                'user_id' => Auth::id(),
-                'aktivitas' => 'Logout dari sistem',
-            ]);
+            // Rekam Log ke Firebase
+            LogHelper::catat('Logout dari sistem');
         }
 
         Auth::logout();
@@ -212,7 +194,7 @@ class AuthController extends Controller
                 return back()->with('error', 'Kode OTP sudah kadaluarsa. Silakan daftar ulang/minta kode baru.');
             }
 
-            // Hapus OTP (biar gak bisa dipake lagi) dan Verifikasi Email
+            // Hapus OTP dan Verifikasi Email
             $user->update([
                 'otp_code' => null,
                 'otp_expires_at' => null,
@@ -222,11 +204,8 @@ class AuthController extends Controller
             // Login Otomatis
             Auth::login($user);
 
-            // Rekam Log
-            LogAktivitas::create([
-                'user_id' => $user->id,
-                'aktivitas' => 'Berhasil verifikasi akun baru',
-            ]);
+            // Rekam Log ke Firebase
+            LogHelper::catat('Berhasil verifikasi akun baru');
 
             return redirect()->route('warga.dashboard')->with('success', 'Akun berhasil diverifikasi!');
         }

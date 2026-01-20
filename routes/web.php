@@ -135,22 +135,48 @@ Route::middleware(['auth', 'role:warga'])->group(function () {
     Route::get('/surat/{id}/cetak-mandiri', [SuratAjuanController::class, 'cetakMandiri'])->name('surat.cetak_mandiri');
 });
 
-// Route untuk Verifikasi QR Code
+// Route untuk Verifikasi QR Code (TAMPILAN BARU)
 Route::get('/cek-surat/{id}', function($id) {
-    // Cari surat berdasarkan ID
-    $surat = \App\Models\SuratAjuan::find($id);
+    // 1. Cari suratnya
+    $surat = \App\Models\SuratAjuan::with('user')->find($id);
     
-    // Tampilan sederhana untuk verifikasi
-    if(!$surat) {
-        return "<h1 style='color:red; text-align:center;'>SURAT TIDAK DITEMUKAN / PALSU!</h1>";
+    // 2. Tampilkan view yang baru kita buat
+    // Kita kirim data $surat ke sana (mau ada isinya atau null/kosong)
+    return view('surat.validasi', compact('surat'));
+
+})->name('cek.surat');
+    
+
+
+
+
+Route::get('/debug-firebase', function () {
+    // 1. Cek File JSON
+    $path = base_path(env('FIREBASE_CREDENTIALS'));
+    if (!file_exists($path)) {
+        return "FATAL ERROR: File JSON tidak ditemukan di: " . $path;
     }
 
-    return "<div style='text-align:center; padding:50px; font-family:sans-serif;'>
-                <h1 style='color:green;'>VERIFIED / ASLI &#10004;</h1>
-                <p>Surat ini benar dikeluarkan oleh Desa Sidokerto.</p>
-                <p><strong>Nomor Surat:</strong> {$surat->nomor_surat}</p>
-                <p><strong>Pemilik:</strong> {$surat->user->name}</p>
-                <p><strong>Tanggal:</strong> {$surat->created_at->format('d M Y')}</p>
-            </div>";
-    })->name('cek.surat');
-    
+    // 2. Cek Koneksi & Kirim Data
+    try {
+        $factory = (new Factory)
+            ->withServiceAccount($path)
+            ->withDatabaseUri(env('FIREBASE_DATABASE_URL'));
+        
+        $database = $factory->createDatabase();
+        
+        $data = [
+            'pesan' => 'Tes Debugging',
+            'waktu' => now()->toDateTimeString()
+        ];
+
+        // Coba kirim
+        $ref = $database->getReference('logs')->push($data);
+        
+        return "SUKSES! Data berhasil dikirim. Key: " . $ref->getKey();
+
+    } catch (\Exception $e) {
+        // Tampilkan error lengkap di layar
+        return "ERROR FIREBASE: " . $e->getMessage();
+    }
+});
