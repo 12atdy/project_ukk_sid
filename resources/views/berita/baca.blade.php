@@ -40,7 +40,7 @@
                 </div>
 
                 <!-- Gambar Utama -->
-                <img src="{{ asset('storage/berita/' . $berita->gambar) }}" class="hero-img shadow-sm mb-4" alt="{{ $berita->judul }}">
+               <img src="{{ asset('storage/berita/' . $berita->gambar) }}" class="img-fluid rounded mb-4" style="width: 100%; max-height: 500px; object-fit: cover;">
 
                 <!-- Isi Berita -->
                 <div class="news-content bg-white p-4 rounded shadow-sm">

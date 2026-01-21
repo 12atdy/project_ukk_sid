@@ -202,7 +202,8 @@
                     <div class="card card-berita shadow-sm h-100">
                         <div class="position-relative">
                             @if($item->gambar)
-                                <img src="{{ asset('storage/' . $item->gambar) }}" class="card-img-top" alt="Berita">
+                               {{-- Tambahkan 'berita/' di path-nya --}}
+                            <img src="{{ asset('storage/berita/' . $item->gambar) }}" class="card-img-top" alt="{{ $item->judul }}" style="height: 200px; object-fit: cover;">
                             @else
                                 <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
                                     <i class="fas fa-image fa-3x text-secondary opacity-25"></i>

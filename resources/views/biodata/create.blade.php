@@ -4,11 +4,13 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i> Form Tambah Data Penduduk</h4>
-            <a href="{{ route('biodata.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i> Kembali</a>
+            {{-- [PERBAIKAN] Tambahkan 'admin.' pada tombol kembali --}}
+            <a href="{{ route('admin.biodata.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i> Kembali</a>
         </div>
         <div class="card-body">
             <form action="{{ route('admin.biodata.store') }}" method="POST">
-                @csrf <div class="mb-3">
+                @csrf 
+                <div class="mb-3">
                     <label for="nik" class="form-label"><strong>NIK</strong></label>
                     <input type="text" id="nik" name="nik" class="form-control @error('nik') is-invalid @enderror" value="{{ old('nik') }}" required placeholder="Masukkan 16 digit NIK">
                     @error('nik')

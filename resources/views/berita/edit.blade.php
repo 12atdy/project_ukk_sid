@@ -14,7 +14,8 @@
 
             <div class="card border-0 shadow-lg rounded-3">
                 <div class="card-body p-5">
-                    <form action="{{ route('berita.update', $berita->id) }}" method="POST" enctype="multipart/form-data">
+                   {{-- Tambahkan 'admin.' di depannya --}}
+                    <form action="{{ route('admin.berita.update', $berita->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT') <!-- PENTING UNTUK UPDATE DATA -->
 

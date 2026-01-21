@@ -30,29 +30,31 @@ class KeuanganController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'kode_transaksi' => 'required|unique:keuangan,kode_transaksi',
-            'jenis_transaksi' => 'required',
-            'jumlah' => 'required|numeric',
-            'tanggal_transaksi' => 'required|date',
-            'keterangan' => 'required',
-            'bukti' => 'nullable|image|mimes:jpg,jpeg,png,pdf|max:2048',
-        ]);
+    // 1. Validasi diperbaiki & dilengkapi
+    $request->validate([
+        'kode_transaksi'    => 'required|unique:keuangan,kode_transaksi',
+        'jenis_transaksi'   => 'required',
+        'jumlah'            => 'required|numeric',
+        'tanggal_transaksi' => 'required|date', // <--- Pastikan nama di View sama dengan ini
+        'sumber_penerima'   => 'required|string', // <--- Tadi ini belum ada
+        'penanggung_jawab'  => 'required|string', // <--- Tadi ini belum ada
+        'keterangan'        => 'required',
+        'bukti'             => 'nullable|image|mimes:jpg,jpeg,png,pdf|max:2048',
+    ]);
 
-        $input = $request->all();
-        $input['user_id'] = Auth::id(); // Otomatis catat siapa admin yang input
+    $input = $request->all();
+    $input['user_id'] = Auth::id();
 
-        // Handle Upload Bukti
-        if ($request->hasFile('bukti')) {
-            $file = $request->file('bukti');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('bukti_keuangan', $filename, 'public');
-            $input['bukti'] = $path;
-        }
+    if ($request->hasFile('bukti')) {
+        $file = $request->file('bukti');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('bukti_keuangan', $filename, 'public');
+        $input['bukti'] = $path;
+    }
 
-        Keuangan::create($input);
+    Keuangan::create($input);
 
-        return redirect()->route('admin.keuangan.index')->with('success', 'Data keuangan berhasil ditambahkan');
+    return redirect()->route('admin.keuangan.index')->with('success', 'Data keuangan berhasil ditambahkan');
     }
 
     public function destroy($id)

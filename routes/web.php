@@ -12,9 +12,7 @@ use App\Http\Controllers\WargaController;
 use App\Http\Controllers\SuratAjuanController;
 use App\Http\Controllers\Admin\KeuanganController; 
 use App\Models\Berita;
-use App\Models\LogAktivitas;
 use Kreait\Firebase\Factory;
-
 
 // --- HALAMAN DEPAN (LANDING PAGE) ---
 Route::get('/', function () {
@@ -63,8 +61,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     // Dashboard (Jadinya: admin.dashboard)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Master Data
+    // --- MASTER DATA ---
+    // INI DIA BIODATA YANG KITA CARI (Sudah Benar di sini)
+    // Jadinya: admin.biodata.index, admin.biodata.store, dll.
     Route::resource('biodata', BiodataController::class);
+    
     Route::resource('berita', BeritaController::class);
     Route::resource('keuangan', KeuanganController::class); 
 
@@ -91,14 +92,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 
             // 2. Ambil 50 data terakhir & Urutkan
             $reference = $database->getReference('logs')
-                                  ->orderByChild('timestamp')
-                                  ->limitToLast(50);
+                                    ->orderByChild('timestamp')
+                                    ->limitToLast(50);
             
             $snapshot = $reference->getSnapshot();
             $logs = $snapshot->getValue(); // Hasilnya berupa Array
 
             // 3. Balik urutan biar yang terbaru di atas
-            // Kalau null (kosong), set jadi array kosong []
             $logs = $logs ? array_reverse($logs) : [];
 
         } catch (\Exception $e) {
@@ -141,23 +141,17 @@ Route::get('/cek-surat/{id}', function($id) {
     $surat = \App\Models\SuratAjuan::with('user')->find($id);
     
     // 2. Tampilkan view yang baru kita buat
-    // Kita kirim data $surat ke sana (mau ada isinya atau null/kosong)
     return view('surat.validasi', compact('surat'));
 
 })->name('cek.surat');
-    
 
-
-
-
+// Route Debugging Firebase (Opsional, buat ngecek koneksi aja)
 Route::get('/debug-firebase', function () {
-    // 1. Cek File JSON
     $path = base_path(env('FIREBASE_CREDENTIALS'));
     if (!file_exists($path)) {
         return "FATAL ERROR: File JSON tidak ditemukan di: " . $path;
     }
 
-    // 2. Cek Koneksi & Kirim Data
     try {
         $factory = (new Factory)
             ->withServiceAccount($path)
@@ -170,13 +164,10 @@ Route::get('/debug-firebase', function () {
             'waktu' => now()->toDateTimeString()
         ];
 
-        // Coba kirim
         $ref = $database->getReference('logs')->push($data);
-        
         return "SUKSES! Data berhasil dikirim. Key: " . $ref->getKey();
 
     } catch (\Exception $e) {
-        // Tampilkan error lengkap di layar
         return "ERROR FIREBASE: " . $e->getMessage();
     }
 });

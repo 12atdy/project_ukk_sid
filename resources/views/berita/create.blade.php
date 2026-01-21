@@ -14,7 +14,7 @@
 
             <div class="card border-0 shadow-lg rounded-3">
                 <div class="card-body p-5">
-                    <form action="{{ route('berita.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.berita.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="row">
