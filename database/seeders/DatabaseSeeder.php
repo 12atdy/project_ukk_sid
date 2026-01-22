@@ -1,12 +1,8 @@
 <?php
 
 namespace Database\Seeders;
-
-// ⚠️ JANGAN LUPA DUA BARIS INI BIAR GAK MERAH
 use App\Models\User;
-use App\Models\Biodata; 
-// -------------------------------------------
-
+use App\Models\Biodata;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -34,8 +30,8 @@ class DatabaseSeeder extends Seeder
         Biodata::create([
             'user_id'       => $warga->id,
             'nik'           => '3515123456780001',
-            'no_kk'         => '3515098765430002',
-            'nama_lengkap'  => 'Budi Santoso', 
+            'nomor_kk'         => '3515098765430002',
+            'nama_lengkap'  => 'Budi Santoso',
             'tempat_lahir'  => 'Sidoarjo',
             'tanggal_lahir' => '1990-05-15',
             'jenis_kelamin' => 'Laki-laki',

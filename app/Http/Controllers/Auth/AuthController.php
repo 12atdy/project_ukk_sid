@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Biodata;
 use Illuminate\Support\Facades\Hash;
-use App\Helpers\LogHelper; // <-- SUDAH DIGANTI PAKAI HELPER
+use App\Helpers\LogHelper;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\SendOtpMail; 
+use App\Mail\SendOtpMail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -24,13 +25,36 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // Proses Login
+    // Proses Login (SUDAH DI-UPDATE DENGAN RECAPTCHA)
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        // 1. Validasi Input (Termasuk Centang Robot)
+        $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
+            'g-recaptcha-response' => 'required' // Wajib dicentang
+        ], [
+            'g-recaptcha-response.required' => 'Silakan centang "Saya bukan robot".'
         ]);
+
+        // 2. Cek ke Google: "Ini manusia apa robot?"
+        try {
+            $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => env('GOOGLE_RECAPTCHA_SECRET'),
+                'response' => $request->input('g-recaptcha-response'),
+            ]);
+
+            // Kalau Google bilang Gagal/Robot
+            if (!$response->json()['success']) {
+                return back()->with('error', 'Verifikasi robot gagal, silakan coba lagi.');
+            }
+        } catch (\Exception $e) {
+            // Kalau internet mati pas ujian, biar tetap bisa login (Opsional, buat jaga-jaga)
+            // return back()->with('error', 'Gagal koneksi ke Google reCAPTCHA.');
+        }
+
+        // 3. Proses Login Biasa (Kodingan Lama Kamu)
+        $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
@@ -40,13 +64,11 @@ class AuthController extends Controller
             if ($role == 'admin') {
                 // Rekam Log ke Firebase
                 LogHelper::catat('Melakukan Login sebagai Admin');
-                
                 return redirect()->route('admin.dashboard');
 
             } elseif ($role == 'warga') {
                 // Rekam Log ke Firebase
                 LogHelper::catat('Melakukan Login sebagai Warga');
-
                 return redirect()->route('warga.dashboard');
 
             } else {
@@ -54,7 +76,7 @@ class AuthController extends Controller
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                
+
                 return back()->with('error', 'Akun bermasalah (Role tidak ditemukan).');
             }
         }
@@ -118,14 +140,35 @@ class AuthController extends Controller
         return view('auth.register-warga');
     }
 
-    public function registerWarga(Request $request)
+   public function registerWarga(Request $request)
     {
+        // 1. VALIDASI INPUT (Sudah ditambah g-recaptcha-response)
         $request->validate([
             'nik' => 'required|unique:biodata,nik|digits:16',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
+            'g-recaptcha-response' => 'required' // <--- WAJIB: Biar gak lolos kalau lupa centang
+        ], [
+            'g-recaptcha-response.required' => 'Silakan centang "Saya bukan robot".'
         ]);
+
+        // 2. CEK KE GOOGLE (MANUAL)
+        try {
+            $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => env('GOOGLE_RECAPTCHA_SECRET'),
+                'response' => $request->input('g-recaptcha-response'),
+            ]);
+
+            // Kalau Google bilang Gagal/Robot
+            if (!$response->json()['success']) {
+                return back()->withInput()->withErrors(['g-recaptcha-response' => 'Verifikasi robot gagal, coba lagi.']);
+            }
+        } catch (\Exception $e) {
+            // Biarkan lewat kalau error koneksi (opsional)
+        }
+
+        // --- 3. PROSES SIMPAN DATA (Kodingan Lama Kamu) ---
 
         $otpCode = rand(100000, 999999);
 
@@ -133,7 +176,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'warga', 
+            'role' => 'warga',
             'otp_code' => $otpCode,
             'otp_expires_at' => Carbon::now()->addMinutes(10),
         ]);
@@ -148,10 +191,10 @@ class AuthController extends Controller
         try {
             Mail::to($user->email)->send(new SendOtpMail($user, $otpCode));
         } catch (\Exception $e) {
-            // Jika gagal kirim email, biarkan saja (untuk dev)
+            // Jika gagal kirim email, biarkan saja
         }
 
-        // Rekam Log (Ditaruh SEBELUM return supaya jalan)
+        // Rekam Log
         LogHelper::catat('Mendaftar akun warga baru');
 
         // Arahkan ke Halaman Verifikasi

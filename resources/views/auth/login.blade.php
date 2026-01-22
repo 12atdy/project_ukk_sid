@@ -40,6 +40,7 @@
             font-size: 16px;
         }
     </style>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -54,7 +55,7 @@
                         <p class="text-muted small mb-0">Silakan login untuk masuk ke sistem</p>
                     </div>
                     <div class="login-body">
-                        
+
                         @if(session('success'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
@@ -72,7 +73,7 @@
                         <!-- FORM LOGIN -->
                         <form action="{{ route('login.post') }}" method="POST">
                             @csrf
-                            
+
                             <div class="mb-3">
                                 <label class="form-label small fw-bold text-muted ms-2">Alamat Email</label>
                                 <div class="input-group">
@@ -92,6 +93,15 @@
                             <div class="text-end mb-3">
                                 <a href="{{ route('password.request') }}" class="text-decoration-none small">Lupa Password?</a>
                             </div>
+                            <div class="mb-3 d-flex justify-content-center">
+                                <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_RECAPTCHA_SITE_KEY') }}"></div>
+                            </div>
+
+                            @error('g-recaptcha-response')
+                                <div class="alert alert-danger py-2 small text-center">
+                                    {{ $message }}
+                                </div>
+                            @enderror
 
                             <div class="d-grid mb-4">
                                 <button type="submit" class="btn btn-primary btn-login shadow">
@@ -105,7 +115,7 @@
                                     Daftar Akun Baru
                                 </a>
                             </div>
-                            
+
                             <div class="text-center mt-3 border-top pt-3">
                                 <a href="{{ url('/') }}" class="text-decoration-none small text-secondary">
                                     <i class="fas fa-arrow-left me-1"></i> Kembali ke Beranda
