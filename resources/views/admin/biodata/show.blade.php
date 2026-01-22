@@ -54,6 +54,18 @@
                                 <td>{{ $biodata->status_perkawinan }}</td>
                             </tr>
                             <tr>
+                                <th class="bg-light">Status Kependudukan</th>
+                                <td>
+                                    @if($biodata->status_kependudukan == 'Tetap')
+                                        <span class="badge bg-success">WARGA TETAP</span>
+                                    @elseif($biodata->status_kependudukan == 'Pendatang')
+                                        <span class="badge bg-warning text-dark">PENDATANG</span>
+                                    @else
+                                        <span class="badge bg-info text-dark">MUSIMAN</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>Pekerjaan</th>
                                 <td>{{ $biodata->pekerjaan }}</td>
                             </tr>

@@ -7,6 +7,20 @@
         <a href="{{ route('admin.biodata.index') }}" class="btn btn-secondary btn-sm">Kembali</a>
     </div>
     <div class="card-body">
+        {{-- LETAKKAN INI DI ATAS FORM AGAR KETAHUAN SALAHNYA --}}
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <strong>Waduh! Ada masalah nih:</strong>
+        <ul class="mb-0 mt-2">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<form action="{{ route('admin.biodata.store') }}" method="POST">
+    {{-- ... --}}
         <form action="{{ route('admin.biodata.store') }}" method="POST">
             @csrf
 
@@ -62,6 +76,15 @@
                         <option value="Kawin">Kawin</option>
                         <option value="Cerai Hidup">Cerai Hidup</option>
                         <option value="Cerai Mati">Cerai Mati</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Status Kependudukan <span class="text-danger">*</span></label>
+                    <select name="status_kependudukan" class="form-control" required>
+                        <option value="Tetap">Warga Tetap (Asli)</option>
+                        <option value="Pendatang">Warga Pendatang (Pindah Masuk)</option>
+                        <option value="Musiman">Warga Musiman (Kost/Kontrak)</option>
                     </select>
                 </div>
 

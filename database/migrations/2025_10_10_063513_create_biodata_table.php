@@ -25,6 +25,7 @@ return new class extends Migration
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->nullable(); // Sesuaikan dengan seeder
             $table->string('agama')->nullable(); // Tambahan kolom Agama
             $table->string('status_perkawinan')->nullable(); // Di seeder 'Kawin', nanti kita sesuaikan
+            $table->enum('status_kependudukan', ['Tetap', 'Pendatang', 'Musiman'])->default('Tetap');
             $table->string('pekerjaan')->nullable();
             $table->text('alamat')->nullable();
             $table->timestamps();

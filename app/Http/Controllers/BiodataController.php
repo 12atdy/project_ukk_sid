@@ -9,13 +9,15 @@ class BiodataController extends Controller
 {
     public function index()
     {
-        $semuaBiodata = Biodata::all();
-        return view('biodata.index', ['data_penduduk' => $semuaBiodata]);
+    $semuaBiodata = Biodata::all();
+
+    return view('admin.biodata.index', ['data_penduduk' => $semuaBiodata]);
     }
 
     public function create()
     {
-        return view('biodata.create');
+   
+    return view('admin.biodata.create');
     }
 
    public function store(Request $request)
@@ -29,7 +31,8 @@ class BiodataController extends Controller
             'tanggal_lahir'     => 'required|date',      // Tambahan
             'jenis_kelamin'     => 'required',           // Tambahan
             'agama'             => 'required',           // Tambahan
-            'status_perkawinan' => 'required',           // Tambahan
+            'status_perkawinan' => 'required',     
+            'status_kependudukan' => 'required',      // Tambahan
             'pekerjaan'         => 'required',           // Tambahan
             'alamat'            => 'required|string|min:5'
         ]);
@@ -49,10 +52,11 @@ class BiodataController extends Controller
     return view('admin.biodata.show', compact('biodata'));
     }
 
-    public function edit(string $id)
+    public function edit($id)
     {
-        $biodata = Biodata::findOrFail($id);
-        return view('biodata.edit', compact('biodata'));
+    $biodata = Biodata::findOrFail($id);
+    
+    return view('admin.biodata.edit', compact('biodata'));
     }
 
     public function update(Request $request, string $id)
@@ -66,6 +70,7 @@ class BiodataController extends Controller
             'jenis_kelamin'     => 'required',
             'agama'             => 'required',
             'status_perkawinan' => 'required',
+            'status_kependudukan' => 'required',
             'pekerjaan'         => 'required',
             'alamat'            => 'required|string|min:5'
         ]);

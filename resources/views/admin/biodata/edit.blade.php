@@ -62,6 +62,15 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Status Kependudukan</label>
+                    <select name="status_kependudukan" class="form-control" required>
+                        <option value="Tetap" {{ $biodata->status_kependudukan == 'Tetap' ? 'selected' : '' }}>Warga Tetap</option>
+                        <option value="Pendatang" {{ $biodata->status_kependudukan == 'Pendatang' ? 'selected' : '' }}>Warga Pendatang</option>
+                        <option value="Musiman" {{ $biodata->status_kependudukan == 'Musiman' ? 'selected' : '' }}>Warga Musiman</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
                     <label>Pekerjaan</label>
                     <input type="text" name="pekerjaan" class="form-control" value="{{ $biodata->pekerjaan }}" required>
                 </div>

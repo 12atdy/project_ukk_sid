@@ -32,7 +32,7 @@ class DashboardController extends Controller
             $laki = Biodata::where('jenis_kelamin', 'Laki-laki')->count();
             $perempuan = Biodata::where('jenis_kelamin', 'Perempuan')->count();
 
-            return view('dashboard', compact(
+            return view('admin.dashboard', compact(
                 'totalSurat', 
                 'totalAduan', 
                 'riwayatSurat', 
